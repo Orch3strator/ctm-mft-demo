@@ -1,0 +1,11 @@
+{
+    "ZZM_GCS": {
+        "Type": "ConnectionProfile:FileTransfer:GCS",
+        "GCSServiceAccountKey": "",
+        "VerifyBytes": true,
+        "GCSServiceAccountKeyFileName": "gcs.json",
+        "VerifyDestination": true,
+        "Description": "TryBMC BDC Lab: Google Cloud Storage",
+        "Centralized": true
+    }
+}

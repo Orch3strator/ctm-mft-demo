@@ -1,0 +1,14 @@
+{
+    "ZZM_SFTP_AGT2": {
+        "Type": "ConnectionProfile:FileTransfer:SFTP",
+        "VerifyBytes": true,
+        "SSHCompression": false,
+        "User": "",
+        "Port": "1222",
+        "HostName": "",
+        "HomeDirectory": "/",
+        "Password": "",
+        "Description": "TryBMC BDC Lab: ctm-gtw.trybmc.local",
+        "Centralized": true
+    }
+}

@@ -1,0 +1,10 @@
+{
+    "ZZM_LFS_AGT": {
+        "Type": "ConnectionProfile:FileTransfer:Local",
+        "VerifyBytes": true,
+        "User": "",
+        "Password": "",
+        "Description": "TryBMC BDC Lab: Local File System",
+        "Centralized": true
+    }
+}

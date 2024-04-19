@@ -1,0 +1,12 @@
+{
+    "ZZM_AZURE": {
+        "Type": "ConnectionProfile:FileTransfer:Azure:SharedKey",
+        "VerifyBytes": true,
+        "AzureAccountName": "",
+        "VerifyDestination": true,
+        "AzureStorageType": "BLOB_STORAGE",
+        "AzureAccountAccessKey": "",
+        "Description": "TryBMC BDC Lab: Azure SA: zzmsa",
+        "Centralized": true
+    }
+}

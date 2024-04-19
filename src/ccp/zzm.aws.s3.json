@@ -1,0 +1,12 @@
+{
+    "ZZM_AWS_S3": {
+        "Type": "ConnectionProfile:FileTransfer:S3:Amazon",
+        "VerifyBytes": true,
+        "SecretAccessKey": "*****",
+        "VerifyDestination": true,
+        "Region": "us-west-1",
+        "AccessKey": "",
+        "Description": "TryBMC BDC Lab: AWS S3 Storage",
+        "Centralized": true
+    }
+}
