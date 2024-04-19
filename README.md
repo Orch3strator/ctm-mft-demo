@@ -6,8 +6,17 @@ These modules are for **educational** purposes.
 
 ## Core workflows and purpose
 
-| ID | Name | Description |
+| Type | Name | Description |
 | :---- | :---- | :---- |
+| Folder | [AWS](src/jobs/zzm.uc.aws.json) | MFT with AWS Access |
+| Folder | [Azure](src/jobs/zzm.uc.azure.json) | MFT with Azure Access |
+| Folder | [GCS](src/jobs/zzm.uc.gcs.json) | MFT with Google Cloud Storage Access |
+| Folder | [Multipath](src/jobs/zzm.uc.multipath.cloud.json) | MFT with AWS, Azure, GCS Access - parallel |
+| Folder | [Multistep](src/jobs/zzm.uc.multistep.cloud.json) | MFT with AWS, Azure, GCS Access - sequential |
+| Folder | [Watch Only](src/jobs/zzm.uc.wnly.json) | MFT Watch Only for file |
+| Folder | [Watch Only Helper](src/jobs/zzm.uc.wnly.hlpr.json) | MFT Watch Only, Helper flow to create missing file |
+
+
 
 
 
