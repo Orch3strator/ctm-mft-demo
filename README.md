@@ -15,12 +15,12 @@ These modules are for **educational** purposes.
 | Folder | [Multistep](src/jobs/zzm.uc.multistep.cloud.json) | MFT with AWS, Azure, GCS Access - sequential |
 | Folder | [Watch Only](src/jobs/zzm.uc.wnly.json) | MFT Watch Only for file |
 | Folder | [Watch Only Helper](src/jobs/zzm.uc.wnly.hlpr.json) | MFT Watch Only, Helper flow to create missing file |
-| CCP | [AWS](src/ccp/zzm.aws.s3.json) | MFT with AWS Access |
-| CCP | [Azure](src/ccp/zzm.azure.json) | MFT with Azure Access |
-| CCP | [GCS](src/ccp/zzm.gcs.json) | MFT with Google Cloud Storage Access |
-| CCP | [Local](src/ccp/zzm.lfs.json) | MFT with Local File System Access |
-| CCP | [SFTP](src/ccp/zzm.lfs.json) | MFT with SFTP Agent 1 Access |
-| CCP | [SFTP](src/ccp/zzm.lfs.json) | MFT with SFTP Agent 2 Access |
+| CCP | [ZZM_AWS_S3](src/ccp/zzm.aws.s3.json) | MFT with AWS Access |
+| CCP | [ZZM_AZURE](src/ccp/zzm.azure.json) | MFT with Azure Access |
+| CCP | [ZZM_GCS](src/ccp/zzm.gcs.json) | MFT with Google Cloud Storage Access |
+| CCP | [ZZM_LFS_AGT](src/ccp/zzm.lfs.json) | MFT with Local File System Access |
+| CCP | [ZZM_SFTP_AGT1](src/ccp/zzm.lfs.json) | MFT with SFTP Agent 1 Access |
+| CCP | [ZZM_SFTP_AGT2](src/ccp/zzm.lfs.json) | MFT with SFTP Agent 2 Access |
 
 
 
