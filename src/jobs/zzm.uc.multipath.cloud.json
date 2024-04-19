@@ -1,0 +1,1576 @@
+{
+  "ZZM_UC_MULTIPATH_CLOUD" : {
+    "Type" : "Folder",
+    "Variables" : [ {
+      "ZZM_CTM_ENVIRONMENT" : ""
+    }, {
+      "ZZM_FILE_PATH" : ""
+    }, {
+      "ZZM_FILE_ABS_PATH" : ""
+    }, {
+      "ZZM_FILE_DIR" : ""
+    }, {
+      "ZZM_FILE_ABS_DIR" : ""
+    }, {
+      "ZZM_FILE_NAME_NO_EXT" : ""
+    }, {
+      "ZZM_FILE_EXT" : ""
+    }, {
+      "ZZM_FILE_EXT_NO_DOT" : ""
+    }, {
+      "ZZM_FILE_DATE_LOCAL" : ""
+    }, {
+      "ZZM_FILE_TIME" : ""
+    }, {
+      "ZZM_FILE_TIME_LOCAL" : ""
+    }, {
+      "ZZM_FILE_SIZE" : ""
+    }, {
+      "ZZM_VIRTUAL_FOLDER" : ""
+    }, {
+      "ZZM_SUB_DIR_PATH" : ""
+    }, {
+      "ZZM_MULTIPATH_CLOUD_TARGET" : ""
+    }, {
+      "ZZM_FILE_SIZE_UNIT" : "MB"
+    }, {
+      "ZZM_COMPANY" : "Werkstatt"
+    }, {
+      "ZZM_USER_ID" : "Meister"
+    }, {
+      "ZZM_USER_EMAIL" : "orchestrator@bmc.com"
+    }, {
+      "ZZM_FILE_NAME" : ""
+    }, {
+      "ZZM_FILE_PATH_NEW" : ""
+    }, {
+      "ZZM_FILE_NAME_NEW" : ""
+    }, {
+      "ZZM_FILE_PARENT_NEW" : ""
+    }, {
+      "ZZM_RANDOM_FILE" : ""
+    }, {
+      "ZZM_AWS_S3_BUCKET" : "zzm-cloud-storage-aws"
+    }, {
+      "ZZM_AZURE_CONTAINER" : "zzm-cloud-storage-azure"
+    }, {
+      "ZZM_GCS_BUCKET" : "zzm-cloud-storage-gcs"
+    }, {
+      "ZZM_OCI_BUCKET" : "zzm-cloud-storage-oci"
+    }, {
+      "ZZM_CCP" : "ZZM_FS_LOCAL"
+    } ],
+    "BusinessFields" : [ {
+      "TeamCode" : "ZZM"
+    } ],
+    "ControlmServer" : "ctm-em.trybmc.local",
+    "Description" : "Basic MFT capability demo: \\n-",
+    "OrderMethod" : "Manual",
+    "RunAs" : "mftuser",
+    "SiteStandard" : "ZZM MFT Site Standard",
+    "SubApplication" : "Multipath Cloud Demo for %%ZZM_USER_ID",
+    "CreatedBy" : "orchestrator@bmc.com",
+    "Application" : "ZZM %%ZZM_COMPANY",
+    "DocumentationUrl" : {
+      "Url" : "https://vse-ZZM.bmc.com/ZZM/demo/capabilities/"
+    },
+    "When" : {
+      "RuleBasedCalendars" : {
+        "Included" : [ "EVERYDAY" ],
+        "EVERYDAY" : {
+          "Type" : "Calendar:RuleBased",
+          "When" : {
+            "DaysRelation" : "OR",
+            "WeekDays" : [ "NONE" ],
+            "MonthDays" : [ "ALL" ]
+          }
+        }
+      }
+    },
+    "IfBase:Folder:CompletionStatus_29" : {
+      "Type" : "If:CompletionStatus",
+      "CompletionStatus" : "OK",
+      "Mail_0" : {
+        "Type" : "Action:Mail",
+        "Subject" : "ZZM GCS Demo: %%ZZM_COMPANY",
+        "To" : "%%ZZM_USER_EMAIL",
+        "CC" : "orchestrator@bmc.com",
+        "Message" : "Use Case: Google Cloud Storage\\nDescription: Move File from Local -> SFTP -> GCS \\n\\nCompany: ZZM_COMPANY\\nUser ID: %%ZZM_USER_ID\\nFile Size Unit: %%ZZM_FILE_SIZE_UNIT\\n\\n== Step 01 ==\\nFile Name Local: %%ZZM_RANDOM_FILE\\nFile Path SFTP: %%ZZM_FILE_PATH_NEW\\nFile Name SFTP: %%ZZM_FILE_NAME_NEW\\n\\n== Step 02 ==\\nGoogle Cloud Storage Bucket: %%ZZM_GCS_BUCKET\\nFile Name AWS S3: /%%ZZM_COMPANY/%%ZZM_FILE_NAME_NEW\\nDirectory Listing in Folder: %%SMART_ORDERID\\n\\n== Step 03 ==\\nCleanUp: TBD"
+      }
+    },
+    "ZZM_UC_MULTIPATH_CLOUD_DELIVER_AWS" : {
+      "Type" : "SubFolder",
+      "SubApplication" : "Multipath Cloud Demo for %%ZZM_USER_ID",
+      "AdjustEvents" : false,
+      "CreatedBy" : "emuser",
+      "RunAs" : "mftuser",
+      "Application" : "ZZM %%ZZM_COMPANY",
+      "When" : {
+        "DaysRelation" : "OR",
+        "RuleBasedCalendars" : {
+          "Included" : [ "USE PARENT" ]
+        }
+      },
+      "ZZM AWS CleanUp" : {
+        "Type" : "Job:FileTransfer",
+        "ConnectionProfileSrc" : "ZZM_SFTP_AGT2",
+        "ConnectionProfileDest" : "ZZM_AWS_S3",
+        "S3BucketName" : "%%ZZM_AWS_S3_BUCKET",
+        "SubApplication" : "Multipath Cloud Demo for %%ZZM_USER_ID",
+        "Host" : "ZZM_AGT_01",
+        "CreatedBy" : "emuser",
+        "Description" : "Download file from cloud and delete from source",
+        "RunAs" : "ZZM_SFTP_AGT2+ZZM_AWS_S3",
+        "Application" : "ZZM %%ZZM_COMPANY",
+        "Variables" : [ {
+          "FTP-LOSTYPE" : "Unix"
+        }, {
+          "FTP-CONNTYPE1" : "SFTP"
+        }, {
+          "FTP-LHOST" : "zzz-aws-linux-1.bmcdemo.com"
+        }, {
+          "FTP-LUSER" : "mftuser"
+        }, {
+          "FTP-ROSTYPE" : "Unix"
+        }, {
+          "FTP-CONNTYPE2" : "S3"
+        }, {
+          "FTP-RHOST" : "S3"
+        }, {
+          "FTP-OVERRIDE_WATCH_INTERVAL1" : "0"
+        }, {
+          "FTP-WATCH_INTERVAL1" : "30"
+        }, {
+          "FTP-DEST_NEWNAME1" : "$$AFTFILE_ALL$$.aws"
+        }, {
+          "FTP-CM_VER" : "9.0.21.100"
+        } ],
+        "FileTransfers" : [ {
+          "ABSTIME" : "0",
+          "VERNUM" : "0",
+          "Dest" : "/%%ZZM_COMPANY/%%ZZM_FILE_NAME_NEW",
+          "SRCOPT" : "1",
+          "TransferType" : "Binary",
+          "CASEIFS" : "0",
+          "DSTOPT" : "6",
+          "RECURSIVE" : "0",
+          "TransferOption" : "DestToSrc",
+          "Src" : "/temp/",
+          "TIMELIMIT" : "0",
+          "EXCLUDE_WILDCARD" : "0",
+          "NULLFLDS" : "0",
+          "TRIM" : "1",
+          "IF_EXIST" : "4",
+          "UNIQUE" : "0",
+          "FileWatcherOptions" : {
+            "UnitsOfTimeLimit" : "Minutes",
+            "VariableType" : "Global"
+          },
+          "PreCommandSrc" : {
+            "action" : "mkdir",
+            "arg1" : "/temp"
+          },
+          "DestinationFilename" : {
+            "ModifyCase" : "No"
+          },
+          "IncrementalTransfer" : {
+            "MaxModificationAgeForFirstRunInHours" : "1"
+          }
+        } ],
+        "When" : {
+          "WeekDays" : [ "NONE" ],
+          "MonthDays" : [ "ALL" ],
+          "DaysRelation" : "OR"
+        },
+        "eventsToWaitFor" : {
+          "Type" : "WaitForEvents",
+          "Events" : [ {
+            "Event" : "ZZM_Directory_Listing_AWS-TO-ZZM_AWS_CleanUp_%%SMART_ORDERID"
+          } ]
+        },
+        "eventsToDelete" : {
+          "Type" : "DeleteEvents",
+          "Events" : [ {
+            "Event" : "ZZM_Directory_Listing_AWS-TO-ZZM_AWS_CleanUp_%%SMART_ORDERID"
+          } ]
+        }
+      },
+      "ZZM AWS InFlight Check" : {
+        "Type" : "Job:EmbeddedScript",
+        "Script" : "#!/bin/bash\\nset +x\\n# shellcheck enable=require-variable-braces\\n# file name: zzm.in.flight.sh\\n################################################################################\\n# License                                                                      #\\n################################################################################\\n\\nfunction license() {\\n    # On MAC update bash: https://scriptingosx.com/2019/02/install-bash-5-on-macos/\\n    printf '%s\\n' \"\"\\n    printf '%s\\n' \" GPL-3.0-only or GPL-3.0-or-later\"\\n    printf '%s\\n' \" Copyright (c) 2021 BMC Software, Inc.\"\\n    printf '%s\\n' \" Author: Volker Scheithauer\"\\n    printf '%s\\n' \" E-Mail: orchestrator@bmc.com\"\\n    printf '%s\\n' \"\"\\n    printf '%s\\n' \" This program is free software: you can redistribute it and/or modify\"\\n    printf '%s\\n' \" it under the terms of the GNU General Public License as published by\"\\n    printf '%s\\n' \" the Free Software Foundation, either version 3 of the License, or\"\\n    printf '%s\\n' \" (at your option) any later version.\"\\n    printf '%s\\n' \"\"\\n    printf '%s\\n' \" This program is distributed in the hope that it will be useful,\"\\n    printf '%s\\n' \" but WITHOUT ANY WARRANTY; without even the implied warranty of\"\\n    printf '%s\\n' \" MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the\"\\n    printf '%s\\n' \" GNU General Public License for more details.\"\\n    printf '%s\\n' \"\"\\n    printf '%s\\n' \" You should have received a copy of the GNU General Public License\"\\n    printf '%s\\n' \" along with this program.  If not, see <https://www.gnu.org/licenses/>.\"\\n}\\n\\nfunction ctmLogo() {\\n    printf '%s\\n' \"\"\\n    printf '%s\\n' \"  @@@@@@@   @@@@@@   @@@  @@@  @@@@@@@  @@@@@@@    @@@@@@   @@@                  @@@@@@@@@@   \"\\n    printf '%s\\n' \" @@@@@@@@  @@@@@@@@  @@@@ @@@  @@@@@@@  @@@@@@@@  @@@@@@@@  @@@                  @@@@@@@@@@@  \"\\n    printf '%s\\n' \" !@@       @@!  @@@  @@!@!@@@    @@!    @@!  @@@  @@!  @@@  @@!                  @@! @@! @@!  \"\\n    printf '%s\\n' \" !@!       !@!  @!@  !@!!@!@!    !@!    !@!  @!@  !@!  @!@  !@!                  !@! !@! !@!  \"\\n    printf '%s\\n' \" !@!       @!@  !@!  @!@ !!@!    @!!    @!@!!@!   @!@  !@!  @!!       @!@!@!@!@  @!! !!@ @!@  \"\\n    printf '%s\\n' \" !!!       !@!  !!!  !@!  !!!    !!!    !!@!@!    !@!  !!!  !!!       !!!@!@!!!  !@!   ! !@!  \"\\n    printf '%s\\n' \" :!!       !!:  !!!  !!:  !!!    !!:    !!: :!!   !!:  !!!  !!:                  !!:     !!:  \"\\n    printf '%s\\n' \" :!:       :!:  !:!  :!:  !:!    :!:    :!:  !:!  :!:  !:!   :!:                 :!:     :!:  \"\\n    printf '%s\\n' \"  ::: :::  ::::: ::   ::   ::     ::    ::   :::  ::::: ::   :: ::::             :::     ::   \"\\n    printf '%s\\n' \"  :: :: :   : :  :   ::    :      :      :   : :   : :  :   : :: : :              :      :    \"\\n    printf '%s\\n' \"\"\\n}\\n\\n# Get current script folder\\n# shellcheck disable=SC2046 # this is intentional\\nDIR_NAME=$(cd $(dirname \"${BASH_SOURCE[0]}\") && pwd)\\nDIR_NAME_PARENT=$(dirname \"${DIR_NAME}\")\\n\\n# shellcheck disable=SC2116 # this is intentionals\\nUSER_NAME=$(whoami)\\nUSER_HOME=$(getent passwd \"${USER_NAME}\" | cut -d: -f6)\\nUSER_AUTH_FILE=\"${USER_HOME}/.ssh/authorized_keys\"\\nUSER_RSA_FILE=\"${USER_HOME}/.ssh/id_rsa\"\\nUSER_GROUP=$(id -gn \"${USER_NAME}\")\\n\\n# SSH settings\\nif [[ -f \"${USER_HOME}/.ssh/id_rsa\" && -f \"${USER_HOME}/.ssh/id_rsa.pub\" ]]; then\\n    USER_RSA_STATUS=\"True\"\\n    USER_RSA_FINGER_PRINT=$(ssh-keygen -l -f \"${USER_HOME}/.ssh/id_rsa\")\\nelse\\n    USER_RSA_STATUS=\"False\"\\nfi\\n\\nif [[ -f \"${USER_HOME}/.ssh/id_rsa\" && -f \"${USER_HOME}/.ssh/id_rsa.pub\" ]]; then\\n    USER_RSA_AUTH_COUNT=$(wc -l <\"${USER_AUTH_FILE}\")\\nelse\\n    USER_RSA_AUTH_COUNT=\"False\"\\nfi\\n\\n# compute working dir\\n# check if write permission\\nif [ -w \"${DIR_NAME_PARENT}\" ]; then\\n    WORKING_DIR=\"${DIR_NAME_PARENT}/proclog\"\\nelse\\n    WORKING_DIR=\"/tmp/data\"\\nfi\\n\\n# create working directory\\nif [ ! -d \"${WORKING_DIR}\" ]; then\\n    mkdir -p \"${WORKING_DIR}\"\\n    ## shellcheck disable=SC2153 # this is intentional\\n    # sudo chown \"${USER_NAME}\":\"${USER_GROUP}\" \"${WORKING_DIR}\" -R\\nfi\\n\\n# logging configuration\\nDATE_TODAY=\"$(date '+%Y-%m-%d %H:%M:%S')\"\\nLOG_DATE=$(date +%Y%m%d)\\nLOG_DIR=\"${WORKING_DIR}/${HOST_NAME}\"\\n\\nif [ ! -d \"${LOG_DIR}\" ]; then\\n    mkdir -p \"${LOG_DIR}\"\\n    ## shellcheck disable=SC2153 # this is intentional\\n    # sudo chown \"${USER_NAME}\":\"${USER_GROUP}\" \"${LOG_DIR}\" -R\\nfi\\n\\n# shellcheck disable=SC2006 disable=SC2086# this is intentional\\nLOG_NAME=$(basename $0)\\nLOG_FILE=\"${LOG_DIR}/${LOG_NAME}.${LOG_DATE}.txt\"\\nif [[ ! -f \"${LOG_FILE}\" ]]; then\\n    echo ' .' | tee -a \"${LOG_FILE}\"\\nfi\\n\\n# compute config dir\\nCONFIG_DIR=\"${DIR_NAME_PARENT}/data\"\\n\\n# shellcheck disable=SC2034 # this is intentional\\nSCRIPT_DATA_FILE=\"${CONFIG_DIR}/data.json\"\\n\\n# Script defaults\\n# shellcheck disable=SC2034 # this is intentional\\nretcode=0\\n# shellcheck disable=SC2034 # this is intentional\\nSETUP_DIR=\"${DIR_NAME_PARENT}\"\\n# shellcheck disable=SC2034 # this is intentional\\nSUDO_STATE=\"false\"\\n# shellcheck disable=SC2116 disable=SC2034 # this is intentional\\nSCRIPT_SHELL=$(echo \"${SHELL}\")\\n\\n# hostname is assumed to be a FQDN set during installation.\\n# shellcheck disable=SC2006 disable=SC2086 disable=SC2034 # this is intentional\\nHOST_FQDN=$(cat /etc/hostname)\\nHOST_FQDN=$(hostname -f)\\n# shellcheck disable=SC2006 disable=SC2086 disable=SC2034 # this is intentional\\nHOST_NAME=$(echo ${HOST_FQDN} | awk -F \".\" '{print $1}')\\n# shellcheck disable=SC2006 disable=SC2086 disable=SC2034 # this is intentional\\nDOMAIN_NAME=$(echo ${HOST_FQDN} | awk -F \".\" '{print $2\".\"$3}')\\n# shellcheck disable=SC2006 disable=SC2086 disable=SC2034 # this is intentional\\nHOST_IPV4=$(ip address | grep -v \"127.0.0\" | grep \"inet \" | awk '{print $2}' | awk -F \"/\" '{print $1}' | head -n 1)\\n\\n# keep track of deployment status\\n# shellcheck disable=SC2034 # this is intentional\\nSTATUS_FILE_PREFIX=\"${LOG_DIR}/${LOG_NAME}\"\\n\\n# Linux Distribution\\n# shellcheck disable=SC2006 disable=SC2086 disable=SC2034 # this is intentional\\nDISTRIBUTION=$(cat /etc/*-release | uniq -u | grep \"^NAME\" | awk -F \"=\" '{ gsub(\"\\\"\", \"\",$2); print $2}')\\nDISTRIBUTION_PRETTY_NAME=$(cat /etc/*-release | uniq -u | grep \"^PRETTY_NAME\" | awk -F \"=\" '{ gsub(\"\\\"\", \"\",$2); print $2}')\\n\\n# JAVA version\\nJAVA_HOME=$(sh -c \"java -XshowSettings:properties -version 2>&1 > /dev/null | grep 'java.home'\" | awk -F \"= \" '{print $2}')\\nJAVA_VERSION=$(sh -c \"java -XshowSettings:properties -version 2>&1 > /dev/null | grep 'java.runtime.version'\" | awk -F \"= \" '{print $2}')\\nJAVA_RUNTIME=$(sh -c \"java -XshowSettings:properties -version 2>&1 > /dev/null | grep 'java.runtime.name'\" | awk -F \"= \" '{print $2}')\\n\\n# Show license\\nlicense\\nctmLogo\\n\\nif [ -z \"${SCRIPT_PURPOSE}\" ]; then\\n    SCRIPT_PURPOSE=\"Base OS Information\"\\nfi\\n\\necho \" \"\\necho \" ${SCRIPT_PURPOSE}\"\\necho \" -----------------------------------------------\"\\necho -e \" Date           : ${DATE_TODAY}\"\\necho -e \" Distribution   : ${DISTRIBUTION_PRETTY_NAME}\"\\necho -e \" Current User   : ${USER}\"\\necho -e \" Sudo Mode      : ${SUDO_STATE}\"\\necho -e \" Domain Name    : ${DOMAIN_NAME}\"\\necho -e \" Host FDQN      : ${HOST_FQDN}\"\\necho -e \" Host Name      : ${HOST_NAME}\"\\necho -e \" Host IPv4      : ${HOST_IPV4}\"\\necho -e \" Script Folder  : ${DIR_NAME}\"\\necho -e \" Working Folder : ${WORKING_DIR}\"\\necho -e \" Config Folder  : ${CONFIG_DIR}\"\\necho -e \" Log Folder     : ${LOG_DIR}\"\\necho \" ---------------------\"\\necho -e \" Data File      : ${SCRIPT_DATA_FILE}\"\\necho -e \" Data Folder    : ${CONFIG_DIR}\"\\necho -e \" JAVA Version   : ${JAVA_VERSION}\"\\necho -e \" JAVA RunTime   : ${JAVA_RUNTIME}\"\\necho -e \" JAVA Home      : ${JAVA_HOME}\"\\necho \" \"\\necho -e \" CTM Env        : ${CTM_ENVIRONMENT}\"\\necho \" -----------------------------------------------\"\\n\\n# echo variables for user and group\\necho -e \" Group Name    : ${USER_GROUP}\"\\necho -e \" User Name     : ${USER_NAME}\"\\necho -e \" User Home     : ${USER_HOME}\"\\necho -e \" SSH Key       : ${USER_RSA_FILE}\"\\necho -e \" SSH Auth      : ${USER_AUTH_FILE}\"\\necho -e \" SSH Status    : ${USER_RSA_STATUS}\"\\necho -e \" SSH FPrint    : ${USER_RSA_FINGER_PRINT}\"\\necho -e \" SSH Auth #    : ${USER_RSA_AUTH_COUNT}\"\\necho \" -----------------------------------------------\"\\necho \" \"\\n",
+        "SubApplication" : "Multipath Cloud Demo for %%ZZM_USER_ID",
+        "FileName" : "zzm.in.flight.sh",
+        "Host" : "ZZM_AGT_01",
+        "CreatedBy" : "orchestrator@bmc.com",
+        "RunAs" : "mftuser",
+        "Application" : "ZZM %%ZZM_COMPANY",
+        "DocumentationUrl" : {
+          "Url" : "https://ctm-git.trybmc.com/control-m-use-case-exploration/ZZM/-/tree/master/src/scripts/helper"
+        },
+        "When" : {
+          "WeekDays" : [ "NONE" ],
+          "Months" : [ "NONE" ],
+          "MonthDays" : [ "NONE" ],
+          "DaysRelation" : "OR",
+          "RuleBasedCalendars" : {
+            "Included" : [ "USE PARENT" ]
+          }
+        },
+        "eventsToAdd" : {
+          "Type" : "AddEvents",
+          "Events" : [ {
+            "Event" : "ZZM_AWS_InFlight_Check-TO-ZZM_Move_File_AWS_%%SMART_ORDERID"
+          } ]
+        }
+      },
+      "ZZM Directory Listing AWS" : {
+        "Type" : "Job:FileTransfer",
+        "ConnectionProfileSrc" : "ZZM_SFTP_AGT2",
+        "ConnectionProfileDest" : "ZZM_AWS_S3",
+        "S3BucketName" : "%%ZZM_AWS_S3_BUCKET",
+        "SubApplication" : "Multipath Cloud Demo for %%ZZM_USER_ID",
+        "Host" : "ZZM_AGT_01",
+        "CreatedBy" : "orchestrator@bmc.com",
+        "Description" : "List SFTP and AWS S3 bucket content for company",
+        "RunAs" : "ZZM_SFTP_AGT2+ZZM_AWS_S3",
+        "Application" : "ZZM %%ZZM_COMPANY",
+        "Variables" : [ {
+          "FTP-LOSTYPE" : "Unix"
+        }, {
+          "FTP-CONNTYPE1" : "SFTP"
+        }, {
+          "FTP-LHOST" : "zzz-aws-linux-1.bmcdemo.com"
+        }, {
+          "FTP-LUSER" : "mftuser"
+        }, {
+          "FTP-ROSTYPE" : "Unix"
+        }, {
+          "FTP-CONNTYPE2" : "S3"
+        }, {
+          "FTP-RHOST" : "S3"
+        }, {
+          "FTP-OVERRIDE_WATCH_INTERVAL1" : "0"
+        }, {
+          "FTP-WATCH_INTERVAL1" : "30"
+        }, {
+          "FTP-CM_VER" : "9.0.21.100"
+        } ],
+        "FileTransfers" : [ {
+          "ABSTIME" : "0",
+          "VERNUM" : "0",
+          "Dest" : "/%%ZZM_COMPANY/",
+          "SRCOPT" : "0",
+          "TransferType" : "Binary",
+          "CASEIFS" : "0",
+          "DSTOPT" : "0",
+          "RECURSIVE" : "0",
+          "TransferOption" : "DirectoryListing",
+          "Src" : "/%%ZZM_FILE_PARENT_NEW/",
+          "TIMELIMIT" : "0",
+          "EXCLUDE_WILDCARD" : "0",
+          "NULLFLDS" : "0",
+          "TRIM" : "1",
+          "IF_EXIST" : "0",
+          "UNIQUE" : "0",
+          "FileWatcherOptions" : {
+            "UnitsOfTimeLimit" : "Minutes",
+            "VariableType" : "Global"
+          },
+          "DestinationFilename" : {
+            "ModifyCase" : "No"
+          },
+          "IncrementalTransfer" : {
+            "MaxModificationAgeForFirstRunInHours" : "1"
+          }
+        } ],
+        "DocumentationUrl" : {
+          "Url" : "https://vse-ZZM.bmc.com/ZZM/demo/capabilities/"
+        },
+        "When" : {
+          "WeekDays" : [ "NONE" ],
+          "Months" : [ "NONE" ],
+          "MonthDays" : [ "NONE" ],
+          "DaysRelation" : "OR",
+          "RuleBasedCalendars" : {
+            "Included" : [ "USE PARENT" ]
+          }
+        },
+        "Output" : {
+          "Destination" : "%%SMART_ORDERID.txt",
+          "Operation" : "Copy"
+        },
+        "eventsToWaitFor" : {
+          "Type" : "WaitForEvents",
+          "Events" : [ {
+            "Event" : "ZZM_Move_File_AWS-TO-ZZM_Directory_Listing_AWS_%%SMART_ORDERID"
+          } ]
+        },
+        "eventsToAdd" : {
+          "Type" : "AddEvents",
+          "Events" : [ {
+            "Event" : "ZZM_Directory_Listing_AWS-TO-ZZM_AWS_CleanUp_%%SMART_ORDERID"
+          } ]
+        },
+        "eventsToDelete" : {
+          "Type" : "DeleteEvents",
+          "Events" : [ {
+            "Event" : "ZZM_Move_File_AWS-TO-ZZM_Directory_Listing_AWS_%%SMART_ORDERID"
+          } ]
+        }
+      },
+      "ZZM Move File AWS" : {
+        "Type" : "Job:FileTransfer",
+        "ConnectionProfileSrc" : "ZZM_SFTP_AGT2",
+        "ConnectionProfileDest" : "ZZM_AWS_S3",
+        "S3BucketName" : "%%ZZM_AWS_S3_BUCKET",
+        "SubApplication" : "Multipath Cloud Demo for %%ZZM_USER_ID",
+        "Host" : "ZZM_AGT_01",
+        "CreatedBy" : "orchestrator@bmc.com",
+        "Description" : "Move file from AGT-2 via SFTP to AWS S3 Bucket",
+        "RunAs" : "ZZM_SFTP_AGT2+ZZM_AWS_S3",
+        "Application" : "ZZM %%ZZM_COMPANY",
+        "Variables" : [ {
+          "FTP-LOSTYPE" : "Unix"
+        }, {
+          "FTP-CONNTYPE1" : "SFTP"
+        }, {
+          "FTP-LHOST" : "zzz-aws-linux-1.bmcdemo.com"
+        }, {
+          "FTP-LUSER" : "mftuser"
+        }, {
+          "FTP-ROSTYPE" : "Unix"
+        }, {
+          "FTP-CONNTYPE2" : "S3"
+        }, {
+          "FTP-RHOST" : "S3"
+        }, {
+          "FTP-OVERRIDE_WATCH_INTERVAL1" : "0"
+        }, {
+          "FTP-WATCH_INTERVAL1" : "30"
+        }, {
+          "FTP-CM_VER" : "9.0.21.100"
+        } ],
+        "FileTransfers" : [ {
+          "ABSTIME" : "0",
+          "VERNUM" : "0",
+          "Dest" : "/%%ZZM_COMPANY/%%ZZM_FILE_NAME_NEW",
+          "SRCOPT" : "0",
+          "TransferType" : "Binary",
+          "CASEIFS" : "0",
+          "DSTOPT" : "0",
+          "RECURSIVE" : "0",
+          "TransferOption" : "SrcToDest",
+          "Src" : "/%%ZZM_FILE_PATH_NEW",
+          "TIMELIMIT" : "0",
+          "EXCLUDE_WILDCARD" : "0",
+          "NULLFLDS" : "0",
+          "TRIM" : "1",
+          "IF_EXIST" : "0",
+          "UNIQUE" : "0",
+          "FileWatcherOptions" : {
+            "UnitsOfTimeLimit" : "Minutes",
+            "VariableType" : "Global"
+          },
+          "DestinationFilename" : {
+            "ModifyCase" : "No"
+          },
+          "IncrementalTransfer" : {
+            "MaxModificationAgeForFirstRunInHours" : "1"
+          }
+        } ],
+        "DocumentationUrl" : {
+          "Url" : "https://vse-ZZM.bmc.com/ZZM/demo/capabilities/"
+        },
+        "When" : {
+          "WeekDays" : [ "NONE" ],
+          "Months" : [ "NONE" ],
+          "MonthDays" : [ "NONE" ],
+          "DaysRelation" : "OR",
+          "RuleBasedCalendars" : {
+            "Included" : [ "USE PARENT" ]
+          }
+        },
+        "IfBase:Folder:CompletionStatus_10" : {
+          "Type" : "If:CompletionStatus",
+          "CompletionStatus" : "NOTOK",
+          "Mail_0" : {
+            "Type" : "Action:Mail",
+            "Subject" : "ZZM Demo Multipath Cloud AWS",
+            "To" : "DBA_Demo_Admins@bmc.com",
+            "CC" : "orchestrator@bmc.com",
+            "Message" : "Failure with folder: ZZM_UC_MULTIPATH_CLOUD_DELIVER_AWS"
+          }
+        },
+        "eventsToWaitFor" : {
+          "Type" : "WaitForEvents",
+          "Events" : [ {
+            "Event" : "ZZM_AWS_InFlight_Check-TO-ZZM_Move_File_AWS_%%SMART_ORDERID"
+          } ]
+        },
+        "eventsToAdd" : {
+          "Type" : "AddEvents",
+          "Events" : [ {
+            "Event" : "ZZM_Move_File_AWS-TO-ZZM_Directory_Listing_AWS_%%SMART_ORDERID"
+          } ]
+        },
+        "eventsToDelete" : {
+          "Type" : "DeleteEvents",
+          "Events" : [ {
+            "Event" : "ZZM_AWS_InFlight_Check-TO-ZZM_Move_File_AWS_%%SMART_ORDERID"
+          } ]
+        }
+      },
+      "eventsToWaitFor" : {
+        "Type" : "WaitForEvents",
+        "Events" : [ {
+          "Event" : "ZZM_UC_MULTIPATH_CLOUD_PROCESS-TO-ZZM_UC_MULTIPATH_CLOUD_DELIVER_AWS_%%SMART_ORDERID"
+        } ]
+      },
+      "eventsToAdd" : {
+        "Type" : "AddEvents",
+        "Events" : [ {
+          "Event" : "ZZM_UC_MULTIPATH_CLOUD_DELIVER_AWS-TO-ZZM_Base_CleanUp_%%SMART_ORDERID"
+        } ]
+      },
+      "eventsToDelete" : {
+        "Type" : "DeleteEvents",
+        "Events" : [ {
+          "Event" : "ZZM_UC_MULTIPATH_CLOUD_PROCESS-TO-ZZM_UC_MULTIPATH_CLOUD_DELIVER_AWS_%%SMART_ORDERID"
+        } ]
+      }
+    },
+    "ZZM_UC_MULTIPATH_CLOUD_DELIVER_AZURE" : {
+      "Type" : "SubFolder",
+      "SubApplication" : "Multipath Cloud Demo for %%ZZM_USER_ID",
+      "AdjustEvents" : false,
+      "CreatedBy" : "emuser",
+      "RunAs" : "mftuser",
+      "Application" : "ZZM %%ZZM_COMPANY",
+      "When" : {
+        "DaysRelation" : "OR",
+        "RuleBasedCalendars" : {
+          "Included" : [ "USE PARENT" ]
+        }
+      },
+      "ZZM AZURE InFlight Check" : {
+        "Type" : "Job:EmbeddedScript",
+        "Script" : "#!/bin/bash\\nset +x\\n# shellcheck enable=require-variable-braces\\n# file name: zzm.in.flight.sh\\n################################################################################\\n# License                                                                      #\\n################################################################################\\n\\nfunction license() {\\n    # On MAC update bash: https://scriptingosx.com/2019/02/install-bash-5-on-macos/\\n    printf '%s\\n' \"\"\\n    printf '%s\\n' \" GPL-3.0-only or GPL-3.0-or-later\"\\n    printf '%s\\n' \" Copyright (c) 2021 BMC Software, Inc.\"\\n    printf '%s\\n' \" Author: Volker Scheithauer\"\\n    printf '%s\\n' \" E-Mail: orchestrator@bmc.com\"\\n    printf '%s\\n' \"\"\\n    printf '%s\\n' \" This program is free software: you can redistribute it and/or modify\"\\n    printf '%s\\n' \" it under the terms of the GNU General Public License as published by\"\\n    printf '%s\\n' \" the Free Software Foundation, either version 3 of the License, or\"\\n    printf '%s\\n' \" (at your option) any later version.\"\\n    printf '%s\\n' \"\"\\n    printf '%s\\n' \" This program is distributed in the hope that it will be useful,\"\\n    printf '%s\\n' \" but WITHOUT ANY WARRANTY; without even the implied warranty of\"\\n    printf '%s\\n' \" MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the\"\\n    printf '%s\\n' \" GNU General Public License for more details.\"\\n    printf '%s\\n' \"\"\\n    printf '%s\\n' \" You should have received a copy of the GNU General Public License\"\\n    printf '%s\\n' \" along with this program.  If not, see <https://www.gnu.org/licenses/>.\"\\n}\\n\\nfunction ctmLogo() {\\n    printf '%s\\n' \"\"\\n    printf '%s\\n' \"  @@@@@@@   @@@@@@   @@@  @@@  @@@@@@@  @@@@@@@    @@@@@@   @@@                  @@@@@@@@@@   \"\\n    printf '%s\\n' \" @@@@@@@@  @@@@@@@@  @@@@ @@@  @@@@@@@  @@@@@@@@  @@@@@@@@  @@@                  @@@@@@@@@@@  \"\\n    printf '%s\\n' \" !@@       @@!  @@@  @@!@!@@@    @@!    @@!  @@@  @@!  @@@  @@!                  @@! @@! @@!  \"\\n    printf '%s\\n' \" !@!       !@!  @!@  !@!!@!@!    !@!    !@!  @!@  !@!  @!@  !@!                  !@! !@! !@!  \"\\n    printf '%s\\n' \" !@!       @!@  !@!  @!@ !!@!    @!!    @!@!!@!   @!@  !@!  @!!       @!@!@!@!@  @!! !!@ @!@  \"\\n    printf '%s\\n' \" !!!       !@!  !!!  !@!  !!!    !!!    !!@!@!    !@!  !!!  !!!       !!!@!@!!!  !@!   ! !@!  \"\\n    printf '%s\\n' \" :!!       !!:  !!!  !!:  !!!    !!:    !!: :!!   !!:  !!!  !!:                  !!:     !!:  \"\\n    printf '%s\\n' \" :!:       :!:  !:!  :!:  !:!    :!:    :!:  !:!  :!:  !:!   :!:                 :!:     :!:  \"\\n    printf '%s\\n' \"  ::: :::  ::::: ::   ::   ::     ::    ::   :::  ::::: ::   :: ::::             :::     ::   \"\\n    printf '%s\\n' \"  :: :: :   : :  :   ::    :      :      :   : :   : :  :   : :: : :              :      :    \"\\n    printf '%s\\n' \"\"\\n}\\n\\n# Get current script folder\\n# shellcheck disable=SC2046 # this is intentional\\nDIR_NAME=$(cd $(dirname \"${BASH_SOURCE[0]}\") && pwd)\\nDIR_NAME_PARENT=$(dirname \"${DIR_NAME}\")\\n\\n# shellcheck disable=SC2116 # this is intentionals\\nUSER_NAME=$(whoami)\\nUSER_HOME=$(getent passwd \"${USER_NAME}\" | cut -d: -f6)\\nUSER_AUTH_FILE=\"${USER_HOME}/.ssh/authorized_keys\"\\nUSER_RSA_FILE=\"${USER_HOME}/.ssh/id_rsa\"\\nUSER_GROUP=$(id -gn \"${USER_NAME}\")\\n\\n# SSH settings\\nif [[ -f \"${USER_HOME}/.ssh/id_rsa\" && -f \"${USER_HOME}/.ssh/id_rsa.pub\" ]]; then\\n    USER_RSA_STATUS=\"True\"\\n    USER_RSA_FINGER_PRINT=$(ssh-keygen -l -f \"${USER_HOME}/.ssh/id_rsa\")\\nelse\\n    USER_RSA_STATUS=\"False\"\\nfi\\n\\nif [[ -f \"${USER_HOME}/.ssh/id_rsa\" && -f \"${USER_HOME}/.ssh/id_rsa.pub\" ]]; then\\n    USER_RSA_AUTH_COUNT=$(wc -l <\"${USER_AUTH_FILE}\")\\nelse\\n    USER_RSA_AUTH_COUNT=\"False\"\\nfi\\n\\n# compute working dir\\n# check if write permission\\nif [ -w \"${DIR_NAME_PARENT}\" ]; then\\n    WORKING_DIR=\"${DIR_NAME_PARENT}/proclog\"\\nelse\\n    WORKING_DIR=\"/tmp/data\"\\nfi\\n\\n# create working directory\\nif [ ! -d \"${WORKING_DIR}\" ]; then\\n    mkdir -p \"${WORKING_DIR}\"\\n    ## shellcheck disable=SC2153 # this is intentional\\n    # sudo chown \"${USER_NAME}\":\"${USER_GROUP}\" \"${WORKING_DIR}\" -R\\nfi\\n\\n# logging configuration\\nDATE_TODAY=\"$(date '+%Y-%m-%d %H:%M:%S')\"\\nLOG_DATE=$(date +%Y%m%d)\\nLOG_DIR=\"${WORKING_DIR}/${HOST_NAME}\"\\n\\nif [ ! -d \"${LOG_DIR}\" ]; then\\n    mkdir -p \"${LOG_DIR}\"\\n    ## shellcheck disable=SC2153 # this is intentional\\n    # sudo chown \"${USER_NAME}\":\"${USER_GROUP}\" \"${LOG_DIR}\" -R\\nfi\\n\\n# shellcheck disable=SC2006 disable=SC2086# this is intentional\\nLOG_NAME=$(basename $0)\\nLOG_FILE=\"${LOG_DIR}/${LOG_NAME}.${LOG_DATE}.txt\"\\nif [[ ! -f \"${LOG_FILE}\" ]]; then\\n    echo ' .' | tee -a \"${LOG_FILE}\"\\nfi\\n\\n# compute config dir\\nCONFIG_DIR=\"${DIR_NAME_PARENT}/data\"\\n\\n# shellcheck disable=SC2034 # this is intentional\\nSCRIPT_DATA_FILE=\"${CONFIG_DIR}/data.json\"\\n\\n# Script defaults\\n# shellcheck disable=SC2034 # this is intentional\\nretcode=0\\n# shellcheck disable=SC2034 # this is intentional\\nSETUP_DIR=\"${DIR_NAME_PARENT}\"\\n# shellcheck disable=SC2034 # this is intentional\\nSUDO_STATE=\"false\"\\n# shellcheck disable=SC2116 disable=SC2034 # this is intentional\\nSCRIPT_SHELL=$(echo \"${SHELL}\")\\n\\n# hostname is assumed to be a FQDN set during installation.\\n# shellcheck disable=SC2006 disable=SC2086 disable=SC2034 # this is intentional\\nHOST_FQDN=$(cat /etc/hostname)\\nHOST_FQDN=$(hostname -f)\\n# shellcheck disable=SC2006 disable=SC2086 disable=SC2034 # this is intentional\\nHOST_NAME=$(echo ${HOST_FQDN} | awk -F \".\" '{print $1}')\\n# shellcheck disable=SC2006 disable=SC2086 disable=SC2034 # this is intentional\\nDOMAIN_NAME=$(echo ${HOST_FQDN} | awk -F \".\" '{print $2\".\"$3}')\\n# shellcheck disable=SC2006 disable=SC2086 disable=SC2034 # this is intentional\\nHOST_IPV4=$(ip address | grep -v \"127.0.0\" | grep \"inet \" | awk '{print $2}' | awk -F \"/\" '{print $1}' | head -n 1)\\n\\n# keep track of deployment status\\n# shellcheck disable=SC2034 # this is intentional\\nSTATUS_FILE_PREFIX=\"${LOG_DIR}/${LOG_NAME}\"\\n\\n# Linux Distribution\\n# shellcheck disable=SC2006 disable=SC2086 disable=SC2034 # this is intentional\\nDISTRIBUTION=$(cat /etc/*-release | uniq -u | grep \"^NAME\" | awk -F \"=\" '{ gsub(\"\\\"\", \"\",$2); print $2}')\\nDISTRIBUTION_PRETTY_NAME=$(cat /etc/*-release | uniq -u | grep \"^PRETTY_NAME\" | awk -F \"=\" '{ gsub(\"\\\"\", \"\",$2); print $2}')\\n\\n# JAVA version\\nJAVA_HOME=$(sh -c \"java -XshowSettings:properties -version 2>&1 > /dev/null | grep 'java.home'\" | awk -F \"= \" '{print $2}')\\nJAVA_VERSION=$(sh -c \"java -XshowSettings:properties -version 2>&1 > /dev/null | grep 'java.runtime.version'\" | awk -F \"= \" '{print $2}')\\nJAVA_RUNTIME=$(sh -c \"java -XshowSettings:properties -version 2>&1 > /dev/null | grep 'java.runtime.name'\" | awk -F \"= \" '{print $2}')\\n\\n# Show license\\nlicense\\nctmLogo\\n\\nif [ -z \"${SCRIPT_PURPOSE}\" ]; then\\n    SCRIPT_PURPOSE=\"Base OS Information\"\\nfi\\n\\necho \" \"\\necho \" ${SCRIPT_PURPOSE}\"\\necho \" -----------------------------------------------\"\\necho -e \" Date           : ${DATE_TODAY}\"\\necho -e \" Distribution   : ${DISTRIBUTION_PRETTY_NAME}\"\\necho -e \" Current User   : ${USER}\"\\necho -e \" Sudo Mode      : ${SUDO_STATE}\"\\necho -e \" Domain Name    : ${DOMAIN_NAME}\"\\necho -e \" Host FDQN      : ${HOST_FQDN}\"\\necho -e \" Host Name      : ${HOST_NAME}\"\\necho -e \" Host IPv4      : ${HOST_IPV4}\"\\necho -e \" Script Folder  : ${DIR_NAME}\"\\necho -e \" Working Folder : ${WORKING_DIR}\"\\necho -e \" Config Folder  : ${CONFIG_DIR}\"\\necho -e \" Log Folder     : ${LOG_DIR}\"\\necho \" ---------------------\"\\necho -e \" Data File      : ${SCRIPT_DATA_FILE}\"\\necho -e \" Data Folder    : ${CONFIG_DIR}\"\\necho -e \" JAVA Version   : ${JAVA_VERSION}\"\\necho -e \" JAVA RunTime   : ${JAVA_RUNTIME}\"\\necho -e \" JAVA Home      : ${JAVA_HOME}\"\\necho \" \"\\necho -e \" CTM Env        : ${CTM_ENVIRONMENT}\"\\necho \" -----------------------------------------------\"\\n\\n# echo variables for user and group\\necho -e \" Group Name    : ${USER_GROUP}\"\\necho -e \" User Name     : ${USER_NAME}\"\\necho -e \" User Home     : ${USER_HOME}\"\\necho -e \" SSH Key       : ${USER_RSA_FILE}\"\\necho -e \" SSH Auth      : ${USER_AUTH_FILE}\"\\necho -e \" SSH Status    : ${USER_RSA_STATUS}\"\\necho -e \" SSH FPrint    : ${USER_RSA_FINGER_PRINT}\"\\necho -e \" SSH Auth #    : ${USER_RSA_AUTH_COUNT}\"\\necho \" -----------------------------------------------\"\\necho \" \"\\n",
+        "SubApplication" : "Multipath Cloud Demo for %%ZZM_USER_ID",
+        "FileName" : "zzm.in.flight.sh",
+        "Host" : "ZZM_AGT_01",
+        "CreatedBy" : "orchestrator@bmc.com",
+        "RunAs" : "mftuser",
+        "Application" : "ZZM %%ZZM_COMPANY",
+        "DocumentationUrl" : {
+          "Url" : "https://ctm-git.trybmc.com/control-m-use-case-exploration/ZZM/-/tree/master/src/scripts/helper"
+        },
+        "When" : {
+          "WeekDays" : [ "NONE" ],
+          "Months" : [ "NONE" ],
+          "MonthDays" : [ "NONE" ],
+          "DaysRelation" : "OR",
+          "RuleBasedCalendars" : {
+            "Included" : [ "USE PARENT" ]
+          }
+        },
+        "eventsToAdd" : {
+          "Type" : "AddEvents",
+          "Events" : [ {
+            "Event" : "ZZM_AZURE_InFlight_Check-TO-ZZM_Move_File_Azure_%%SMART_ORDERID"
+          } ]
+        }
+      },
+      "ZZM Azure CleanUp" : {
+        "Type" : "Job:FileTransfer",
+        "ConnectionProfileSrc" : "ZZM_SFTP_AGT2",
+        "ConnectionProfileDest" : "ZZM_AZURE",
+        "AzureContainerNameDest" : "%%ZZM_AZURE_CONTAINER",
+        "SubApplication" : "Multipath Cloud Demo for %%ZZM_USER_ID",
+        "Host" : "ZZM_AGT_01",
+        "CreatedBy" : "emuser",
+        "Description" : "Download file from cloud and delete from source",
+        "RunAs" : "ZZM_SFTP_AGT2+ZZM_AZURE",
+        "Application" : "ZZM %%ZZM_COMPANY",
+        "Variables" : [ {
+          "FTP-LOSTYPE" : "Unix"
+        }, {
+          "FTP-CONNTYPE1" : "SFTP"
+        }, {
+          "FTP-LHOST" : "zzz-aws-linux-1.bmcdemo.com"
+        }, {
+          "FTP-LUSER" : "mftuser"
+        }, {
+          "FTP-ROSTYPE" : "Unix"
+        }, {
+          "FTP-CONNTYPE2" : "AZURE"
+        }, {
+          "FTP-RHOST" : "Azure"
+        }, {
+          "FTP-OVERRIDE_WATCH_INTERVAL1" : "0"
+        }, {
+          "FTP-WATCH_INTERVAL1" : "30"
+        }, {
+          "FTP-DEST_NEWNAME1" : "$$AFTFILE_ALL$$.azure"
+        }, {
+          "FTP-CM_VER" : "9.0.21.100"
+        } ],
+        "FileTransfers" : [ {
+          "ABSTIME" : "0",
+          "VERNUM" : "0",
+          "Dest" : "/%%ZZM_COMPANY/%%ZZM_FILE_NAME_NEW",
+          "SRCOPT" : "1",
+          "TransferType" : "Binary",
+          "CASEIFS" : "0",
+          "DSTOPT" : "6",
+          "RECURSIVE" : "0",
+          "TransferOption" : "DestToSrc",
+          "Src" : "/temp/",
+          "TIMELIMIT" : "0",
+          "EXCLUDE_WILDCARD" : "0",
+          "NULLFLDS" : "0",
+          "TRIM" : "1",
+          "IF_EXIST" : "4",
+          "UNIQUE" : "0",
+          "FileWatcherOptions" : {
+            "UnitsOfTimeLimit" : "Minutes",
+            "VariableType" : "Global"
+          },
+          "PreCommandSrc" : {
+            "action" : "mkdir",
+            "arg1" : "/temp"
+          },
+          "DestinationFilename" : {
+            "ModifyCase" : "No"
+          },
+          "IncrementalTransfer" : {
+            "MaxModificationAgeForFirstRunInHours" : "1"
+          }
+        } ],
+        "When" : {
+          "WeekDays" : [ "NONE" ],
+          "MonthDays" : [ "ALL" ],
+          "DaysRelation" : "OR"
+        },
+        "eventsToWaitFor" : {
+          "Type" : "WaitForEvents",
+          "Events" : [ {
+            "Event" : "ZZM_Directory_Listing_Azure-TO-ZZM_Azure_CleanUp_%%SMART_ORDERID"
+          } ]
+        },
+        "eventsToDelete" : {
+          "Type" : "DeleteEvents",
+          "Events" : [ {
+            "Event" : "ZZM_Directory_Listing_Azure-TO-ZZM_Azure_CleanUp_%%SMART_ORDERID"
+          } ]
+        }
+      },
+      "ZZM Directory Listing Azure" : {
+        "Type" : "Job:FileTransfer",
+        "ConnectionProfileSrc" : "ZZM_SFTP_AGT2",
+        "ConnectionProfileDest" : "ZZM_AZURE",
+        "AzureContainerNameDest" : "%%ZZM_AZURE_CONTAINER",
+        "SubApplication" : "Multipath Cloud Demo for %%ZZM_USER_ID",
+        "Host" : "ZZM_AGT_01",
+        "CreatedBy" : "orchestrator@bmc.com",
+        "Description" : "List SFTP and Azure Storage Container content for company",
+        "RunAs" : "ZZM_SFTP_AGT2+ZZM_AZURE",
+        "Application" : "ZZM %%ZZM_COMPANY",
+        "Variables" : [ {
+          "FTP-LOSTYPE" : "Unix"
+        }, {
+          "FTP-CONNTYPE1" : "SFTP"
+        }, {
+          "FTP-LHOST" : "zzz-aws-linux-1.bmcdemo.com"
+        }, {
+          "FTP-LUSER" : "mftuser"
+        }, {
+          "FTP-ROSTYPE" : "Unix"
+        }, {
+          "FTP-CONNTYPE2" : "AZURE"
+        }, {
+          "FTP-RHOST" : "Azure"
+        }, {
+          "FTP-OVERRIDE_WATCH_INTERVAL1" : "0"
+        }, {
+          "FTP-WATCH_INTERVAL1" : "30"
+        }, {
+          "FTP-CM_VER" : "9.0.21.100"
+        } ],
+        "FileTransfers" : [ {
+          "ABSTIME" : "0",
+          "VERNUM" : "0",
+          "Dest" : "/%%ZZM_COMPANY/",
+          "SRCOPT" : "0",
+          "TransferType" : "Binary",
+          "CASEIFS" : "0",
+          "DSTOPT" : "0",
+          "RECURSIVE" : "0",
+          "TransferOption" : "DirectoryListing",
+          "Src" : "/%%ZZM_FILE_PARENT_NEW/",
+          "TIMELIMIT" : "0",
+          "EXCLUDE_WILDCARD" : "0",
+          "NULLFLDS" : "0",
+          "TRIM" : "1",
+          "IF_EXIST" : "0",
+          "UNIQUE" : "0",
+          "FileWatcherOptions" : {
+            "UnitsOfTimeLimit" : "Minutes",
+            "VariableType" : "Global"
+          },
+          "DestinationFilename" : {
+            "ModifyCase" : "No"
+          },
+          "IncrementalTransfer" : {
+            "MaxModificationAgeForFirstRunInHours" : "1"
+          }
+        } ],
+        "DocumentationUrl" : {
+          "Url" : "https://vse-ZZM.bmc.com/ZZM/demo/capabilities/"
+        },
+        "When" : {
+          "WeekDays" : [ "NONE" ],
+          "Months" : [ "NONE" ],
+          "MonthDays" : [ "NONE" ],
+          "DaysRelation" : "OR",
+          "RuleBasedCalendars" : {
+            "Included" : [ "USE PARENT" ]
+          }
+        },
+        "Output" : {
+          "Destination" : "%%SMART_ORDERID.txt",
+          "Operation" : "Copy"
+        },
+        "eventsToWaitFor" : {
+          "Type" : "WaitForEvents",
+          "Events" : [ {
+            "Event" : "ZZM_Move_File_Azure-TO-ZZM_Directory_Listing_Azure_%%SMART_ORDERID"
+          } ]
+        },
+        "eventsToAdd" : {
+          "Type" : "AddEvents",
+          "Events" : [ {
+            "Event" : "ZZM_Directory_Listing_Azure-TO-ZZM_Azure_CleanUp_%%SMART_ORDERID"
+          } ]
+        },
+        "eventsToDelete" : {
+          "Type" : "DeleteEvents",
+          "Events" : [ {
+            "Event" : "ZZM_Move_File_Azure-TO-ZZM_Directory_Listing_Azure_%%SMART_ORDERID"
+          } ]
+        }
+      },
+      "ZZM Move File Azure" : {
+        "Type" : "Job:FileTransfer",
+        "ConnectionProfileSrc" : "ZZM_SFTP_AGT2",
+        "ConnectionProfileDest" : "ZZM_AZURE",
+        "AzureContainerNameDest" : "%%ZZM_AZURE_CONTAINER",
+        "SubApplication" : "Multipath Cloud Demo for %%ZZM_USER_ID",
+        "Host" : "ZZM_AGT_01",
+        "CreatedBy" : "orchestrator@bmc.com",
+        "Description" : "Move file from AGT-2 via SFTP to Azure Storage Container",
+        "RunAs" : "ZZM_SFTP_AGT2+ZZM_AZURE",
+        "Application" : "ZZM %%ZZM_COMPANY",
+        "Variables" : [ {
+          "FTP-LOSTYPE" : "Unix"
+        }, {
+          "FTP-CONNTYPE1" : "SFTP"
+        }, {
+          "FTP-LHOST" : "zzz-aws-linux-1.bmcdemo.com"
+        }, {
+          "FTP-LUSER" : "mftuser"
+        }, {
+          "FTP-ROSTYPE" : "Unix"
+        }, {
+          "FTP-CONNTYPE2" : "AZURE"
+        }, {
+          "FTP-RHOST" : "Azure"
+        }, {
+          "FTP-OVERRIDE_WATCH_INTERVAL1" : "0"
+        }, {
+          "FTP-WATCH_INTERVAL1" : "30"
+        }, {
+          "FTP-CM_VER" : "9.0.21.100"
+        } ],
+        "FileTransfers" : [ {
+          "ABSTIME" : "0",
+          "VERNUM" : "0",
+          "Dest" : "/%%ZZM_COMPANY/%%ZZM_FILE_NAME_NEW",
+          "SRCOPT" : "0",
+          "TransferType" : "Binary",
+          "CASEIFS" : "0",
+          "DSTOPT" : "0",
+          "RECURSIVE" : "0",
+          "TransferOption" : "SrcToDest",
+          "Src" : "/%%ZZM_FILE_PATH_NEW",
+          "TIMELIMIT" : "0",
+          "EXCLUDE_WILDCARD" : "0",
+          "NULLFLDS" : "0",
+          "TRIM" : "1",
+          "IF_EXIST" : "0",
+          "UNIQUE" : "0",
+          "FileWatcherOptions" : {
+            "UnitsOfTimeLimit" : "Minutes",
+            "VariableType" : "Global"
+          },
+          "DestinationFilename" : {
+            "ModifyCase" : "No"
+          },
+          "IncrementalTransfer" : {
+            "MaxModificationAgeForFirstRunInHours" : "1"
+          }
+        } ],
+        "DocumentationUrl" : {
+          "Url" : "https://vse-ZZM.bmc.com/ZZM/demo/capabilities/"
+        },
+        "When" : {
+          "WeekDays" : [ "NONE" ],
+          "Months" : [ "NONE" ],
+          "MonthDays" : [ "NONE" ],
+          "DaysRelation" : "OR",
+          "RuleBasedCalendars" : {
+            "Included" : [ "USE PARENT" ]
+          }
+        },
+        "IfBase:Folder:CompletionStatus_10" : {
+          "Type" : "If:CompletionStatus",
+          "CompletionStatus" : "NOTOK",
+          "Mail_0" : {
+            "Type" : "Action:Mail",
+            "Subject" : "ZZM Demo Multipath Cloud",
+            "To" : "DBA_Demo_Admins@bmc.com",
+            "CC" : "orchestrator@bmc.com",
+            "Message" : "Failure with folder: ZZM_UC_MULTIPATH_CLOUD_DELIVER_AZURE"
+          }
+        },
+        "eventsToWaitFor" : {
+          "Type" : "WaitForEvents",
+          "Events" : [ {
+            "Event" : "ZZM_AZURE_InFlight_Check-TO-ZZM_Move_File_Azure_%%SMART_ORDERID"
+          } ]
+        },
+        "eventsToAdd" : {
+          "Type" : "AddEvents",
+          "Events" : [ {
+            "Event" : "ZZM_Move_File_Azure-TO-ZZM_Directory_Listing_Azure_%%SMART_ORDERID"
+          } ]
+        },
+        "eventsToDelete" : {
+          "Type" : "DeleteEvents",
+          "Events" : [ {
+            "Event" : "ZZM_AZURE_InFlight_Check-TO-ZZM_Move_File_Azure_%%SMART_ORDERID"
+          } ]
+        }
+      },
+      "eventsToWaitFor" : {
+        "Type" : "WaitForEvents",
+        "Events" : [ {
+          "Event" : "ZZM_UC_MULTIPATH_CLOUD_PROCESS-TO-ZZM_UC_MULTIPATH_CLOUD_DELIVER_AZURE_%%SMART_ORDERID"
+        } ]
+      },
+      "eventsToAdd" : {
+        "Type" : "AddEvents",
+        "Events" : [ {
+          "Event" : "ZZM_UC_MULTIPATH_CLOUD_DELIVER_AZURE-TO-ZZM_Base_CleanUp_%%SMART_ORDERID"
+        } ]
+      },
+      "eventsToDelete" : {
+        "Type" : "DeleteEvents",
+        "Events" : [ {
+          "Event" : "ZZM_UC_MULTIPATH_CLOUD_PROCESS-TO-ZZM_UC_MULTIPATH_CLOUD_DELIVER_AZURE_%%SMART_ORDERID"
+        } ]
+      }
+    },
+    "ZZM_UC_MULTIPATH_CLOUD_DELIVER_GOOGLE" : {
+      "Type" : "SubFolder",
+      "SubApplication" : "Multipath Cloud Demo for %%ZZM_USER_ID",
+      "AdjustEvents" : false,
+      "CreatedBy" : "emuser",
+      "RunAs" : "mftuser",
+      "Application" : "ZZM %%ZZM_COMPANY",
+      "When" : {
+        "DaysRelation" : "OR",
+        "RuleBasedCalendars" : {
+          "Included" : [ "USE PARENT" ]
+        }
+      },
+      "ZZM Directory Listing GCS" : {
+        "Type" : "Job:FileTransfer",
+        "ConnectionProfileSrc" : "ZZM_SFTP_AGT2",
+        "ConnectionProfileDest" : "ZZM_GCS",
+        "GCSBucketNameDest" : "%%ZZM_GCS_BUCKET",
+        "SubApplication" : "Multipath Cloud Demo for %%ZZM_USER_ID",
+        "Host" : "ZZM_AGT_01",
+        "CreatedBy" : "orchestrator@bmc.com",
+        "Description" : "List SFTP and Google Cloud Storage Bucket content for company",
+        "RunAs" : "ZZM_SFTP_AGT2+ZZM_GCS",
+        "Application" : "ZZM %%ZZM_COMPANY",
+        "Variables" : [ {
+          "FTP-LOSTYPE" : "Unix"
+        }, {
+          "FTP-CONNTYPE1" : "SFTP"
+        }, {
+          "FTP-LHOST" : "zzz-aws-linux-1.bmcdemo.com"
+        }, {
+          "FTP-LUSER" : "mftuser"
+        }, {
+          "FTP-ROSTYPE" : "Unix"
+        }, {
+          "FTP-CONNTYPE2" : "GCS"
+        }, {
+          "FTP-RHOST" : "GCS"
+        }, {
+          "FTP-OVERRIDE_WATCH_INTERVAL1" : "0"
+        }, {
+          "FTP-WATCH_INTERVAL1" : "30"
+        }, {
+          "FTP-CM_VER" : "9.0.21.100"
+        } ],
+        "FileTransfers" : [ {
+          "ABSTIME" : "0",
+          "VERNUM" : "0",
+          "Dest" : "/%%ZZM_COMPANY/",
+          "SRCOPT" : "0",
+          "TransferType" : "Binary",
+          "CASEIFS" : "0",
+          "DSTOPT" : "0",
+          "RECURSIVE" : "0",
+          "TransferOption" : "DirectoryListing",
+          "Src" : "/%%ZZM_FILE_PARENT_NEW/",
+          "TIMELIMIT" : "0",
+          "EXCLUDE_WILDCARD" : "0",
+          "NULLFLDS" : "0",
+          "TRIM" : "1",
+          "IF_EXIST" : "0",
+          "UNIQUE" : "0",
+          "FileWatcherOptions" : {
+            "UnitsOfTimeLimit" : "Minutes",
+            "VariableType" : "Global"
+          },
+          "DestinationFilename" : {
+            "ModifyCase" : "No"
+          },
+          "IncrementalTransfer" : {
+            "MaxModificationAgeForFirstRunInHours" : "0"
+          }
+        } ],
+        "DocumentationUrl" : {
+          "Url" : "https://vse-ZZM.bmc.com/ZZM/demo/capabilities/"
+        },
+        "When" : {
+          "WeekDays" : [ "NONE" ],
+          "Months" : [ "NONE" ],
+          "MonthDays" : [ "NONE" ],
+          "DaysRelation" : "OR",
+          "RuleBasedCalendars" : {
+            "Included" : [ "USE PARENT" ]
+          }
+        },
+        "Output" : {
+          "Destination" : "%%SMART_ORDERID.txt",
+          "Operation" : "Copy"
+        },
+        "eventsToWaitFor" : {
+          "Type" : "WaitForEvents",
+          "Events" : [ {
+            "Event" : "ZZM_Move_File_GCS-TO-ZZM_Directory_Listing_GCS_%%SMART_ORDERID"
+          } ]
+        },
+        "eventsToAdd" : {
+          "Type" : "AddEvents",
+          "Events" : [ {
+            "Event" : "ZZM_Directory_Listing_GCS-TO-ZZM_GCS_CleanUp_%%SMART_ORDERID"
+          } ]
+        },
+        "eventsToDelete" : {
+          "Type" : "DeleteEvents",
+          "Events" : [ {
+            "Event" : "ZZM_Move_File_GCS-TO-ZZM_Directory_Listing_GCS_%%SMART_ORDERID"
+          } ]
+        }
+      },
+      "ZZM GCS CleanUp" : {
+        "Type" : "Job:FileTransfer",
+        "ConnectionProfileSrc" : "ZZM_SFTP_AGT2",
+        "ConnectionProfileDest" : "ZZM_GCS",
+        "GCSBucketNameDest" : "%%ZZM_GCS_BUCKET",
+        "SubApplication" : "Multipath Cloud Demo for %%ZZM_USER_ID",
+        "Host" : "ZZM_AGT_01",
+        "CreatedBy" : "emuser",
+        "RunAs" : "ZZM_SFTP_AGT2+ZZM_GCS",
+        "Application" : "ZZM %%ZZM_COMPANY",
+        "Variables" : [ {
+          "FTP-LOSTYPE" : "Unix"
+        }, {
+          "FTP-CONNTYPE1" : "SFTP"
+        }, {
+          "FTP-LHOST" : "zzz-aws-linux-1.bmcdemo.com"
+        }, {
+          "FTP-LUSER" : "mftuser"
+        }, {
+          "FTP-ROSTYPE" : "Unix"
+        }, {
+          "FTP-CONNTYPE2" : "GCS"
+        }, {
+          "FTP-RHOST" : "GCS"
+        }, {
+          "FTP-OVERRIDE_WATCH_INTERVAL1" : "0"
+        }, {
+          "FTP-WATCH_INTERVAL1" : "30"
+        }, {
+          "FTP-DEST_NEWNAME1" : "$$AFTFILE_ALL$$.gcs"
+        }, {
+          "FTP-CM_VER" : "9.0.21.100"
+        } ],
+        "FileTransfers" : [ {
+          "ABSTIME" : "0",
+          "VERNUM" : "0",
+          "Dest" : "/%%ZZM_COMPANY/%%ZZM_FILE_NAME_NEW",
+          "SRCOPT" : "1",
+          "TransferType" : "Binary",
+          "CASEIFS" : "0",
+          "DSTOPT" : "6",
+          "RECURSIVE" : "0",
+          "TransferOption" : "DestToSrc",
+          "Src" : "/temp/",
+          "TIMELIMIT" : "0",
+          "EXCLUDE_WILDCARD" : "0",
+          "NULLFLDS" : "0",
+          "TRIM" : "1",
+          "IF_EXIST" : "4",
+          "UNIQUE" : "0",
+          "FileWatcherOptions" : {
+            "UnitsOfTimeLimit" : "Minutes",
+            "VariableType" : "Global"
+          },
+          "PreCommandSrc" : {
+            "action" : "mkdir",
+            "arg1" : "/temp"
+          },
+          "DestinationFilename" : {
+            "ModifyCase" : "No"
+          },
+          "IncrementalTransfer" : {
+            "MaxModificationAgeForFirstRunInHours" : "1"
+          }
+        } ],
+        "When" : {
+          "WeekDays" : [ "NONE" ],
+          "MonthDays" : [ "ALL" ],
+          "DaysRelation" : "OR"
+        },
+        "eventsToWaitFor" : {
+          "Type" : "WaitForEvents",
+          "Events" : [ {
+            "Event" : "ZZM_Directory_Listing_GCS-TO-ZZM_GCS_CleanUp_%%SMART_ORDERID"
+          } ]
+        },
+        "eventsToDelete" : {
+          "Type" : "DeleteEvents",
+          "Events" : [ {
+            "Event" : "ZZM_Directory_Listing_GCS-TO-ZZM_GCS_CleanUp_%%SMART_ORDERID"
+          } ]
+        }
+      },
+      "ZZM GCS InFlight Check" : {
+        "Type" : "Job:EmbeddedScript",
+        "Script" : "#!/bin/bash\\nset +x\\n# shellcheck enable=require-variable-braces\\n# file name: zzm.in.flight.sh\\n################################################################################\\n# License                                                                      #\\n################################################################################\\n\\nfunction license() {\\n    # On MAC update bash: https://scriptingosx.com/2019/02/install-bash-5-on-macos/\\n    printf '%s\\n' \"\"\\n    printf '%s\\n' \" GPL-3.0-only or GPL-3.0-or-later\"\\n    printf '%s\\n' \" Copyright (c) 2021 BMC Software, Inc.\"\\n    printf '%s\\n' \" Author: Volker Scheithauer\"\\n    printf '%s\\n' \" E-Mail: orchestrator@bmc.com\"\\n    printf '%s\\n' \"\"\\n    printf '%s\\n' \" This program is free software: you can redistribute it and/or modify\"\\n    printf '%s\\n' \" it under the terms of the GNU General Public License as published by\"\\n    printf '%s\\n' \" the Free Software Foundation, either version 3 of the License, or\"\\n    printf '%s\\n' \" (at your option) any later version.\"\\n    printf '%s\\n' \"\"\\n    printf '%s\\n' \" This program is distributed in the hope that it will be useful,\"\\n    printf '%s\\n' \" but WITHOUT ANY WARRANTY; without even the implied warranty of\"\\n    printf '%s\\n' \" MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the\"\\n    printf '%s\\n' \" GNU General Public License for more details.\"\\n    printf '%s\\n' \"\"\\n    printf '%s\\n' \" You should have received a copy of the GNU General Public License\"\\n    printf '%s\\n' \" along with this program.  If not, see <https://www.gnu.org/licenses/>.\"\\n}\\n\\nfunction ctmLogo() {\\n    printf '%s\\n' \"\"\\n    printf '%s\\n' \"  @@@@@@@   @@@@@@   @@@  @@@  @@@@@@@  @@@@@@@    @@@@@@   @@@                  @@@@@@@@@@   \"\\n    printf '%s\\n' \" @@@@@@@@  @@@@@@@@  @@@@ @@@  @@@@@@@  @@@@@@@@  @@@@@@@@  @@@                  @@@@@@@@@@@  \"\\n    printf '%s\\n' \" !@@       @@!  @@@  @@!@!@@@    @@!    @@!  @@@  @@!  @@@  @@!                  @@! @@! @@!  \"\\n    printf '%s\\n' \" !@!       !@!  @!@  !@!!@!@!    !@!    !@!  @!@  !@!  @!@  !@!                  !@! !@! !@!  \"\\n    printf '%s\\n' \" !@!       @!@  !@!  @!@ !!@!    @!!    @!@!!@!   @!@  !@!  @!!       @!@!@!@!@  @!! !!@ @!@  \"\\n    printf '%s\\n' \" !!!       !@!  !!!  !@!  !!!    !!!    !!@!@!    !@!  !!!  !!!       !!!@!@!!!  !@!   ! !@!  \"\\n    printf '%s\\n' \" :!!       !!:  !!!  !!:  !!!    !!:    !!: :!!   !!:  !!!  !!:                  !!:     !!:  \"\\n    printf '%s\\n' \" :!:       :!:  !:!  :!:  !:!    :!:    :!:  !:!  :!:  !:!   :!:                 :!:     :!:  \"\\n    printf '%s\\n' \"  ::: :::  ::::: ::   ::   ::     ::    ::   :::  ::::: ::   :: ::::             :::     ::   \"\\n    printf '%s\\n' \"  :: :: :   : :  :   ::    :      :      :   : :   : :  :   : :: : :              :      :    \"\\n    printf '%s\\n' \"\"\\n}\\n\\n# Get current script folder\\n# shellcheck disable=SC2046 # this is intentional\\nDIR_NAME=$(cd $(dirname \"${BASH_SOURCE[0]}\") && pwd)\\nDIR_NAME_PARENT=$(dirname \"${DIR_NAME}\")\\n\\n# shellcheck disable=SC2116 # this is intentionals\\nUSER_NAME=$(whoami)\\nUSER_HOME=$(getent passwd \"${USER_NAME}\" | cut -d: -f6)\\nUSER_AUTH_FILE=\"${USER_HOME}/.ssh/authorized_keys\"\\nUSER_RSA_FILE=\"${USER_HOME}/.ssh/id_rsa\"\\nUSER_GROUP=$(id -gn \"${USER_NAME}\")\\n\\n# SSH settings\\nif [[ -f \"${USER_HOME}/.ssh/id_rsa\" && -f \"${USER_HOME}/.ssh/id_rsa.pub\" ]]; then\\n    USER_RSA_STATUS=\"True\"\\n    USER_RSA_FINGER_PRINT=$(ssh-keygen -l -f \"${USER_HOME}/.ssh/id_rsa\")\\nelse\\n    USER_RSA_STATUS=\"False\"\\nfi\\n\\nif [[ -f \"${USER_HOME}/.ssh/id_rsa\" && -f \"${USER_HOME}/.ssh/id_rsa.pub\" ]]; then\\n    USER_RSA_AUTH_COUNT=$(wc -l <\"${USER_AUTH_FILE}\")\\nelse\\n    USER_RSA_AUTH_COUNT=\"False\"\\nfi\\n\\n# compute working dir\\n# check if write permission\\nif [ -w \"${DIR_NAME_PARENT}\" ]; then\\n    WORKING_DIR=\"${DIR_NAME_PARENT}/proclog\"\\nelse\\n    WORKING_DIR=\"/tmp/data\"\\nfi\\n\\n# create working directory\\nif [ ! -d \"${WORKING_DIR}\" ]; then\\n    mkdir -p \"${WORKING_DIR}\"\\n    ## shellcheck disable=SC2153 # this is intentional\\n    # sudo chown \"${USER_NAME}\":\"${USER_GROUP}\" \"${WORKING_DIR}\" -R\\nfi\\n\\n# logging configuration\\nDATE_TODAY=\"$(date '+%Y-%m-%d %H:%M:%S')\"\\nLOG_DATE=$(date +%Y%m%d)\\nLOG_DIR=\"${WORKING_DIR}/${HOST_NAME}\"\\n\\nif [ ! -d \"${LOG_DIR}\" ]; then\\n    mkdir -p \"${LOG_DIR}\"\\n    ## shellcheck disable=SC2153 # this is intentional\\n    # sudo chown \"${USER_NAME}\":\"${USER_GROUP}\" \"${LOG_DIR}\" -R\\nfi\\n\\n# shellcheck disable=SC2006 disable=SC2086# this is intentional\\nLOG_NAME=$(basename $0)\\nLOG_FILE=\"${LOG_DIR}/${LOG_NAME}.${LOG_DATE}.txt\"\\nif [[ ! -f \"${LOG_FILE}\" ]]; then\\n    echo ' .' | tee -a \"${LOG_FILE}\"\\nfi\\n\\n# compute config dir\\nCONFIG_DIR=\"${DIR_NAME_PARENT}/data\"\\n\\n# shellcheck disable=SC2034 # this is intentional\\nSCRIPT_DATA_FILE=\"${CONFIG_DIR}/data.json\"\\n\\n# Script defaults\\n# shellcheck disable=SC2034 # this is intentional\\nretcode=0\\n# shellcheck disable=SC2034 # this is intentional\\nSETUP_DIR=\"${DIR_NAME_PARENT}\"\\n# shellcheck disable=SC2034 # this is intentional\\nSUDO_STATE=\"false\"\\n# shellcheck disable=SC2116 disable=SC2034 # this is intentional\\nSCRIPT_SHELL=$(echo \"${SHELL}\")\\n\\n# hostname is assumed to be a FQDN set during installation.\\n# shellcheck disable=SC2006 disable=SC2086 disable=SC2034 # this is intentional\\nHOST_FQDN=$(cat /etc/hostname)\\nHOST_FQDN=$(hostname -f)\\n# shellcheck disable=SC2006 disable=SC2086 disable=SC2034 # this is intentional\\nHOST_NAME=$(echo ${HOST_FQDN} | awk -F \".\" '{print $1}')\\n# shellcheck disable=SC2006 disable=SC2086 disable=SC2034 # this is intentional\\nDOMAIN_NAME=$(echo ${HOST_FQDN} | awk -F \".\" '{print $2\".\"$3}')\\n# shellcheck disable=SC2006 disable=SC2086 disable=SC2034 # this is intentional\\nHOST_IPV4=$(ip address | grep -v \"127.0.0\" | grep \"inet \" | awk '{print $2}' | awk -F \"/\" '{print $1}' | head -n 1)\\n\\n# keep track of deployment status\\n# shellcheck disable=SC2034 # this is intentional\\nSTATUS_FILE_PREFIX=\"${LOG_DIR}/${LOG_NAME}\"\\n\\n# Linux Distribution\\n# shellcheck disable=SC2006 disable=SC2086 disable=SC2034 # this is intentional\\nDISTRIBUTION=$(cat /etc/*-release | uniq -u | grep \"^NAME\" | awk -F \"=\" '{ gsub(\"\\\"\", \"\",$2); print $2}')\\nDISTRIBUTION_PRETTY_NAME=$(cat /etc/*-release | uniq -u | grep \"^PRETTY_NAME\" | awk -F \"=\" '{ gsub(\"\\\"\", \"\",$2); print $2}')\\n\\n# JAVA version\\nJAVA_HOME=$(sh -c \"java -XshowSettings:properties -version 2>&1 > /dev/null | grep 'java.home'\" | awk -F \"= \" '{print $2}')\\nJAVA_VERSION=$(sh -c \"java -XshowSettings:properties -version 2>&1 > /dev/null | grep 'java.runtime.version'\" | awk -F \"= \" '{print $2}')\\nJAVA_RUNTIME=$(sh -c \"java -XshowSettings:properties -version 2>&1 > /dev/null | grep 'java.runtime.name'\" | awk -F \"= \" '{print $2}')\\n\\n# Show license\\nlicense\\nctmLogo\\n\\nif [ -z \"${SCRIPT_PURPOSE}\" ]; then\\n    SCRIPT_PURPOSE=\"Base OS Information\"\\nfi\\n\\necho \" \"\\necho \" ${SCRIPT_PURPOSE}\"\\necho \" -----------------------------------------------\"\\necho -e \" Date           : ${DATE_TODAY}\"\\necho -e \" Distribution   : ${DISTRIBUTION_PRETTY_NAME}\"\\necho -e \" Current User   : ${USER}\"\\necho -e \" Sudo Mode      : ${SUDO_STATE}\"\\necho -e \" Domain Name    : ${DOMAIN_NAME}\"\\necho -e \" Host FDQN      : ${HOST_FQDN}\"\\necho -e \" Host Name      : ${HOST_NAME}\"\\necho -e \" Host IPv4      : ${HOST_IPV4}\"\\necho -e \" Script Folder  : ${DIR_NAME}\"\\necho -e \" Working Folder : ${WORKING_DIR}\"\\necho -e \" Config Folder  : ${CONFIG_DIR}\"\\necho -e \" Log Folder     : ${LOG_DIR}\"\\necho \" ---------------------\"\\necho -e \" Data File      : ${SCRIPT_DATA_FILE}\"\\necho -e \" Data Folder    : ${CONFIG_DIR}\"\\necho -e \" JAVA Version   : ${JAVA_VERSION}\"\\necho -e \" JAVA RunTime   : ${JAVA_RUNTIME}\"\\necho -e \" JAVA Home      : ${JAVA_HOME}\"\\necho \" \"\\necho -e \" CTM Env        : ${CTM_ENVIRONMENT}\"\\necho \" -----------------------------------------------\"\\n\\n# echo variables for user and group\\necho -e \" Group Name    : ${USER_GROUP}\"\\necho -e \" User Name     : ${USER_NAME}\"\\necho -e \" User Home     : ${USER_HOME}\"\\necho -e \" SSH Key       : ${USER_RSA_FILE}\"\\necho -e \" SSH Auth      : ${USER_AUTH_FILE}\"\\necho -e \" SSH Status    : ${USER_RSA_STATUS}\"\\necho -e \" SSH FPrint    : ${USER_RSA_FINGER_PRINT}\"\\necho -e \" SSH Auth #    : ${USER_RSA_AUTH_COUNT}\"\\necho \" -----------------------------------------------\"\\necho \" \"\\n",
+        "SubApplication" : "Multipath Cloud Demo for %%ZZM_USER_ID",
+        "FileName" : "zzm.in.flight.sh",
+        "Host" : "ZZM_AGT_01",
+        "CreatedBy" : "orchestrator@bmc.com",
+        "RunAs" : "mftuser",
+        "Application" : "ZZM %%ZZM_COMPANY",
+        "DocumentationUrl" : {
+          "Url" : "https://ctm-git.trybmc.com/control-m-use-case-exploration/ZZM/-/tree/master/src/scripts/helper"
+        },
+        "When" : {
+          "WeekDays" : [ "NONE" ],
+          "Months" : [ "NONE" ],
+          "MonthDays" : [ "NONE" ],
+          "DaysRelation" : "OR",
+          "RuleBasedCalendars" : {
+            "Included" : [ "USE PARENT" ]
+          }
+        },
+        "eventsToAdd" : {
+          "Type" : "AddEvents",
+          "Events" : [ {
+            "Event" : "ZZM_GCS_InFlight_Check-TO-ZZM_Move_File_GCS_%%SMART_ORDERID"
+          } ]
+        }
+      },
+      "ZZM Move File GCS" : {
+        "Type" : "Job:FileTransfer",
+        "ConnectionProfileSrc" : "ZZM_SFTP_AGT2",
+        "ConnectionProfileDest" : "ZZM_GCS",
+        "GCSBucketNameDest" : "%%ZZM_GCS_BUCKET",
+        "SubApplication" : "Multipath Cloud Demo for %%ZZM_USER_ID",
+        "Host" : "ZZM_AGT_01",
+        "CreatedBy" : "orchestrator@bmc.com",
+        "Description" : "Move file from AGT-2 via SFTP to Google Cloud Storage Bucket",
+        "RunAs" : "ZZM_SFTP_AGT2+ZZM_GCS",
+        "Application" : "ZZM %%ZZM_COMPANY",
+        "Variables" : [ {
+          "FTP-LOSTYPE" : "Unix"
+        }, {
+          "FTP-CONNTYPE1" : "SFTP"
+        }, {
+          "FTP-LHOST" : "zzz-aws-linux-1.bmcdemo.com"
+        }, {
+          "FTP-LUSER" : "mftuser"
+        }, {
+          "FTP-ROSTYPE" : "Unix"
+        }, {
+          "FTP-CONNTYPE2" : "GCS"
+        }, {
+          "FTP-RHOST" : "GCS"
+        }, {
+          "FTP-OVERRIDE_WATCH_INTERVAL1" : "0"
+        }, {
+          "FTP-WATCH_INTERVAL1" : "30"
+        }, {
+          "FTP-CM_VER" : "9.0.21.100"
+        } ],
+        "FileTransfers" : [ {
+          "ABSTIME" : "0",
+          "VERNUM" : "0",
+          "Dest" : "/%%ZZM_COMPANY/%%ZZM_FILE_NAME_NEW",
+          "SRCOPT" : "0",
+          "TransferType" : "Binary",
+          "CASEIFS" : "0",
+          "DSTOPT" : "0",
+          "RECURSIVE" : "0",
+          "TransferOption" : "SrcToDest",
+          "Src" : "/%%ZZM_FILE_PATH_NEW",
+          "TIMELIMIT" : "0",
+          "EXCLUDE_WILDCARD" : "0",
+          "NULLFLDS" : "0",
+          "TRIM" : "1",
+          "IF_EXIST" : "0",
+          "UNIQUE" : "0",
+          "FileWatcherOptions" : {
+            "UnitsOfTimeLimit" : "Minutes",
+            "VariableType" : "Global"
+          },
+          "DestinationFilename" : {
+            "ModifyCase" : "No"
+          },
+          "IncrementalTransfer" : {
+            "MaxModificationAgeForFirstRunInHours" : "1"
+          }
+        } ],
+        "DocumentationUrl" : {
+          "Url" : "https://vse-ZZM.bmc.com/ZZM/demo/capabilities/"
+        },
+        "When" : {
+          "WeekDays" : [ "NONE" ],
+          "Months" : [ "NONE" ],
+          "MonthDays" : [ "NONE" ],
+          "DaysRelation" : "OR",
+          "RuleBasedCalendars" : {
+            "Included" : [ "USE PARENT" ]
+          }
+        },
+        "IfBase:Folder:CompletionStatus_10" : {
+          "Type" : "If:CompletionStatus",
+          "CompletionStatus" : "NOTOK",
+          "Mail_0" : {
+            "Type" : "Action:Mail",
+            "Subject" : "ZZM Demo Multipath Cloud",
+            "To" : "DBA_Demo_Admins@bmc.com",
+            "CC" : "orchestrator@bmc.com",
+            "Message" : "Failure with folder: ZZM_UC_MULTIPATH_CLOUD_DELIVER_GOOGLE"
+          }
+        },
+        "eventsToWaitFor" : {
+          "Type" : "WaitForEvents",
+          "Events" : [ {
+            "Event" : "ZZM_GCS_InFlight_Check-TO-ZZM_Move_File_GCS_%%SMART_ORDERID"
+          } ]
+        },
+        "eventsToAdd" : {
+          "Type" : "AddEvents",
+          "Events" : [ {
+            "Event" : "ZZM_Move_File_GCS-TO-ZZM_Directory_Listing_GCS_%%SMART_ORDERID"
+          } ]
+        },
+        "eventsToDelete" : {
+          "Type" : "DeleteEvents",
+          "Events" : [ {
+            "Event" : "ZZM_GCS_InFlight_Check-TO-ZZM_Move_File_GCS_%%SMART_ORDERID"
+          } ]
+        }
+      },
+      "eventsToWaitFor" : {
+        "Type" : "WaitForEvents",
+        "Events" : [ {
+          "Event" : "ZZM_UC_MULTIPATH_CLOUD_PROCESS-TO-ZZM_UC_MULTIPATH_CLOUD_DELIVER_GOOGLE_%%SMART_ORDERID"
+        } ]
+      },
+      "eventsToAdd" : {
+        "Type" : "AddEvents",
+        "Events" : [ {
+          "Event" : "ZZM_UC_MULTIPATH_CLOUD_DELIVER_GOOGLE-TO-ZZM_Base_CleanUp_%%SMART_ORDERID"
+        } ]
+      },
+      "eventsToDelete" : {
+        "Type" : "DeleteEvents",
+        "Events" : [ {
+          "Event" : "ZZM_UC_MULTIPATH_CLOUD_PROCESS-TO-ZZM_UC_MULTIPATH_CLOUD_DELIVER_GOOGLE_%%SMART_ORDERID"
+        } ]
+      }
+    },
+    "ZZM_UC_MULTIPATH_CLOUD_INGEST" : {
+      "Type" : "SubFolder",
+      "SubApplication" : "Multipath Cloud Demo for %%ZZM_USER_ID",
+      "AdjustEvents" : false,
+      "CreatedBy" : "orchestrator@bmc.com",
+      "Description" : "Simulate data capture and ingestion phase.\\nCreate random sample data. MFT Job is in \"watch & transfer\" mode. Once sample file is ready, file will be transferred from AGT-01 to AGT-02.",
+      "RunAs" : "mftuser",
+      "Application" : "ZZM %%ZZM_COMPANY",
+      "When" : {
+        "DaysRelation" : "OR",
+        "RuleBasedCalendars" : {
+          "Included" : [ "USE PARENT" ]
+        }
+      },
+      "ZZM Create Random File" : {
+        "Type" : "Job:Command",
+        "SubApplication" : "Multipath Cloud Demo for %%ZZM_USER_ID",
+        "Host" : "ZZM_AGT_01",
+        "CreatedBy" : "orchestrator@bmc.com",
+        "Description" : "Random Binary File, file size determined in MB,KB,GB",
+        "RunAs" : "mftuser",
+        "Application" : "ZZM %%ZZM_COMPANY",
+        "Command" : "head -c  $(( ( RANDOM % 10 )  + 1 ))%%ZZM_FILE_SIZE_UNIT /dev/urandom > /tmp/%%ZZM_RANDOM_FILE",
+        "When" : {
+          "WeekDays" : [ "NONE" ],
+          "Months" : [ "NONE" ],
+          "MonthDays" : [ "NONE" ],
+          "DaysRelation" : "OR",
+          "RuleBasedCalendars" : {
+            "Included" : [ "USE PARENT" ]
+          }
+        },
+        "eventsToWaitFor" : {
+          "Type" : "WaitForEvents",
+          "Events" : [ {
+            "Event" : "ZZM_Create_Random_File_Name-TO-ZZM_Create_Random_File_%%SMART_ORDERID"
+          } ]
+        },
+        "eventsToDelete" : {
+          "Type" : "DeleteEvents",
+          "Events" : [ {
+            "Event" : "ZZM_Create_Random_File_Name-TO-ZZM_Create_Random_File_%%SMART_ORDERID"
+          } ]
+        }
+      },
+      "ZZM Create Random File Name" : {
+        "Type" : "Job:Command",
+        "SubApplication" : "Multipath Cloud Demo for %%ZZM_USER_ID",
+        "Host" : "ZZM_AGT_01",
+        "CreatedBy" : "orchestrator@bmc.com",
+        "RunAs" : "mftuser",
+        "Application" : "ZZM %%ZZM_COMPANY",
+        "Command" : "cd /tmp/ && TMPFILE=$(mktemp data.multipath.cloud.XXXXXXXXXX.bin)",
+        "When" : {
+          "WeekDays" : [ "NONE" ],
+          "Months" : [ "NONE" ],
+          "MonthDays" : [ "NONE" ],
+          "DaysRelation" : "OR",
+          "RuleBasedCalendars" : {
+            "Included" : [ "USE PARENT" ]
+          }
+        },
+        "CaptureOutput_0" : {
+          "Type" : "Action:CaptureOutput",
+          "Capture" : "UpToEndOfLine",
+          "Search" : "TMPFILE=",
+          "VariableName" : "\\\\ZZM_RANDOM_FILE"
+        },
+        "eventsToAdd" : {
+          "Type" : "AddEvents",
+          "Events" : [ {
+            "Event" : "ZZM_Create_Random_File_Name-TO-ZZM_Move_File_SFTP_%%SMART_ORDERID"
+          }, {
+            "Event" : "ZZM_Create_Random_File_Name-TO-ZZM_Create_Random_File_%%SMART_ORDERID"
+          } ]
+        }
+      },
+      "ZZM Move File SFTP" : {
+        "Type" : "Job:FileTransfer",
+        "ConnectionProfileSrc" : "ZZM_SFTP_AGT2",
+        "ConnectionProfileDest" : "ZZM_LFS_AGT",
+        "SubApplication" : "Multipath Cloud Demo for %%ZZM_USER_ID",
+        "Host" : "ZZM_AGT_01",
+        "CreatedBy" : "orchestrator@bmc.com",
+        "Description" : "Demo: Watch & Transfer\\nMove file from local file system on AGT-01 via SFTP to AGT-02",
+        "RunAs" : "ZZM_SFTP_AGT2+ZZM_LFS_AGT",
+        "Application" : "ZZM %%ZZM_COMPANY",
+        "Variables" : [ {
+          "FTP-LOSTYPE" : "Unix"
+        }, {
+          "FTP-CONNTYPE1" : "SFTP"
+        }, {
+          "FTP-LHOST" : "zzz-aws-linux-1.bmcdemo.com"
+        }, {
+          "FTP-LUSER" : "mftuser"
+        }, {
+          "FTP-ROSTYPE" : "Unix"
+        }, {
+          "FTP-CONNTYPE2" : "LOCAL"
+        }, {
+          "FTP-RHOST" : "localhost"
+        }, {
+          "FTP-RUSER" : "mftuser"
+        }, {
+          "FTP-OVERRIDE_WATCH_INTERVAL1" : "0"
+        }, {
+          "FTP-WATCH_INTERVAL1" : "30"
+        }, {
+          "FTP-CM_VER" : "9.0.21.100"
+        } ],
+        "FileTransfers" : [ {
+          "ABSTIME" : "0",
+          "VERNUM" : "0",
+          "Dest" : "/tmp/%%ZZM_RANDOM_FILE",
+          "SRCOPT" : "1",
+          "FailJobOnSourceActionFailure" : true,
+          "TransferType" : "Binary",
+          "CASEIFS" : "0",
+          "DSTOPT" : "0",
+          "RECURSIVE" : "0",
+          "TransferOption" : "DestToSrcFileWatcher",
+          "Src" : "/%%ZZM_COMPANY/",
+          "TIMELIMIT" : "10",
+          "EXCLUDE_WILDCARD" : "0",
+          "NULLFLDS" : "0",
+          "TRIM" : "1",
+          "IF_EXIST" : "0",
+          "UNIQUE" : "0",
+          "FileWatcherOptions" : {
+            "UnitsOfTimeLimit" : "Minutes",
+            "VariableType" : "Global"
+          },
+          "PreCommandSrc" : {
+            "action" : "mkdir",
+            "arg1" : "/%%ZZM_COMPANY"
+          },
+          "DestinationFilename" : {
+            "ModifyCase" : "Lowercase",
+            "NamePattern" : "[N].[T].[D].[E]"
+          },
+          "IncrementalTransfer" : {
+            "MaxModificationAgeForFirstRunInHours" : "1"
+          }
+        } ],
+        "DocumentationUrl" : {
+          "Url" : "https://vse-ZZM.bmc.com/ZZM/demo/capabilities/"
+        },
+        "When" : {
+          "WeekDays" : [ "NONE" ],
+          "Months" : [ "NONE" ],
+          "MonthDays" : [ "NONE" ],
+          "DaysRelation" : "OR",
+          "RuleBasedCalendars" : {
+            "Included" : [ "USE PARENT" ]
+          }
+        },
+        "IfBase:Folder:CompletionStatus_11" : {
+          "Type" : "If:CompletionStatus",
+          "CompletionStatus" : "NOTOK",
+          "Mail_0" : {
+            "Type" : "Action:Mail",
+            "Subject" : "ZZM Demo Multipath Cloud",
+            "To" : "DBA_Demo_Admins@bmc.com",
+            "CC" : "orchestrator@bmc.com",
+            "Message" : "Failure with folder: ZZM_UC_MULTIPATH_CLOUD_INGEST"
+          }
+        },
+        "CaptureOutput_12" : {
+          "Type" : "Action:CaptureOutput",
+          "Capture" : "UpToEndOfLine",
+          "Search" : "Open data connection to store file",
+          "VariableName" : "\\\\ZZM_FILE_NAME_NEW"
+        },
+        "eventsToWaitFor" : {
+          "Type" : "WaitForEvents",
+          "Events" : [ {
+            "Event" : "ZZM_Create_Random_File_Name-TO-ZZM_Move_File_SFTP_%%SMART_ORDERID"
+          } ]
+        },
+        "eventsToAdd" : {
+          "Type" : "AddEvents",
+          "Events" : [ {
+            "Event" : "ZZM_Move_File_SFTP-TO-ZZM_Report_Data_File_Name_%%SMART_ORDERID"
+          } ]
+        },
+        "eventsToDelete" : {
+          "Type" : "DeleteEvents",
+          "Events" : [ {
+            "Event" : "ZZM_Create_Random_File_Name-TO-ZZM_Move_File_SFTP_%%SMART_ORDERID"
+          } ]
+        }
+      },
+      "ZZM Report Data File Name" : {
+        "Type" : "Job:EmbeddedScript",
+        "Script" : "#!/bin/bash\\nset +x\\n# shellcheck enable=require-variable-braces\\n# file name: zzm.compute.file.name.sh\\n################################################################################\\n# License                                                                      #\\n################################################################################\\n\\nfunction license() {\\n    # On MAC update bash: https://scriptingosx.com/2019/02/install-bash-5-on-macos/\\n    printf '%s\\n' \"\"\\n    printf '%s\\n' \" GPL-3.0-only or GPL-3.0-or-later\"\\n    printf '%s\\n' \" Copyright (c) 2021 BMC Software, Inc.\"\\n    printf '%s\\n' \" Author: Volker Scheithauer\"\\n    printf '%s\\n' \" E-Mail: orchestrator@bmc.com\"\\n    printf '%s\\n' \"\"\\n    printf '%s\\n' \" This program is free software: you can redistribute it and/or modify\"\\n    printf '%s\\n' \" it under the terms of the GNU General Public License as published by\"\\n    printf '%s\\n' \" the Free Software Foundation, either version 3 of the License, or\"\\n    printf '%s\\n' \" (at your option) any later version.\"\\n    printf '%s\\n' \"\"\\n    printf '%s\\n' \" This program is distributed in the hope that it will be useful,\"\\n    printf '%s\\n' \" but WITHOUT ANY WARRANTY; without even the implied warranty of\"\\n    printf '%s\\n' \" MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the\"\\n    printf '%s\\n' \" GNU General Public License for more details.\"\\n    printf '%s\\n' \"\"\\n    printf '%s\\n' \" You should have received a copy of the GNU General Public License\"\\n    printf '%s\\n' \" along with this program.  If not, see <https://www.gnu.org/licenses/>.\"\\n}\\n\\nfunction ctmLogo() {\\n    printf '%s\\n' \"\"\\n    printf '%s\\n' \"  @@@@@@@   @@@@@@   @@@  @@@  @@@@@@@  @@@@@@@    @@@@@@   @@@                  @@@@@@@@@@   \"\\n    printf '%s\\n' \" @@@@@@@@  @@@@@@@@  @@@@ @@@  @@@@@@@  @@@@@@@@  @@@@@@@@  @@@                  @@@@@@@@@@@  \"\\n    printf '%s\\n' \" !@@       @@!  @@@  @@!@!@@@    @@!    @@!  @@@  @@!  @@@  @@!                  @@! @@! @@!  \"\\n    printf '%s\\n' \" !@!       !@!  @!@  !@!!@!@!    !@!    !@!  @!@  !@!  @!@  !@!                  !@! !@! !@!  \"\\n    printf '%s\\n' \" !@!       @!@  !@!  @!@ !!@!    @!!    @!@!!@!   @!@  !@!  @!!       @!@!@!@!@  @!! !!@ @!@  \"\\n    printf '%s\\n' \" !!!       !@!  !!!  !@!  !!!    !!!    !!@!@!    !@!  !!!  !!!       !!!@!@!!!  !@!   ! !@!  \"\\n    printf '%s\\n' \" :!!       !!:  !!!  !!:  !!!    !!:    !!: :!!   !!:  !!!  !!:                  !!:     !!:  \"\\n    printf '%s\\n' \" :!:       :!:  !:!  :!:  !:!    :!:    :!:  !:!  :!:  !:!   :!:                 :!:     :!:  \"\\n    printf '%s\\n' \"  ::: :::  ::::: ::   ::   ::     ::    ::   :::  ::::: ::   :: ::::             :::     ::   \"\\n    printf '%s\\n' \"  :: :: :   : :  :   ::    :      :      :   : :   : :  :   : :: : :              :      :    \"\\n    printf '%s\\n' \"\"\\n}\\n\\n# Get current script folder\\n# shellcheck disable=SC2046 # this is intentional\\nDIR_NAME=$(cd $(dirname \"${BASH_SOURCE[0]}\") && pwd)\\nDIR_NAME_PARENT=$(dirname \"${DIR_NAME}\")\\n\\n# shellcheck disable=SC2116 # this is intentionals\\nUSER_NAME=$(whoami)\\n\\n# compute working dir\\n# check if write permission\\nif [ -w \"${DIR_NAME_PARENT}\" ]; then\\n    WORKING_DIR=\"${DIR_NAME_PARENT}/proclog\"\\nelse\\n    WORKING_DIR=\"/tmp/data\"\\nfi\\n\\n# create working directory\\nif [ ! -d \"${WORKING_DIR}\" ]; then\\n    mkdir -p \"${WORKING_DIR}\"\\n    ## shellcheck disable=SC2153 # this is intentional\\n    # sudo chown \"${USER_NAME}\":\"${USER_GROUP}\" \"${WORKING_DIR}\" -R\\nfi\\n\\n# logging configuration\\nDATE_TODAY=\"$(date '+%Y-%m-%d %H:%M:%S')\"\\nLOG_DATE=$(date +%Y%m%d)\\nLOG_DIR=\"${WORKING_DIR}/${HOST_NAME}\"\\n\\nif [ ! -d \"${LOG_DIR}\" ]; then\\n    mkdir -p \"${LOG_DIR}\"\\n    ## shellcheck disable=SC2153 # this is intentional\\n    # sudo chown \"${USER_NAME}\":\"${USER_GROUP}\" \"${LOG_DIR}\" -R\\nfi\\n\\n# shellcheck disable=SC2006 disable=SC2086# this is intentional\\nLOG_NAME=$(basename $0)\\nLOG_FILE=\"${LOG_DIR}/${LOG_NAME}.${LOG_DATE}.txt\"\\nif [[ ! -f \"${LOG_FILE}\" ]]; then\\n    echo ' .' | tee -a \"${LOG_FILE}\"\\nfi\\n\\n# compute config dir\\nCONFIG_DIR=\"${DIR_NAME_PARENT}/data\"\\n\\n# shellcheck disable=SC2034 # this is intentional\\nSCRIPT_DATA_FILE=\"${CONFIG_DIR}/data.json\"\\n\\n# Script defaults\\n# shellcheck disable=SC2034 # this is intentional\\nretcode=0\\n# shellcheck disable=SC2034 # this is intentional\\nSETUP_DIR=\"${DIR_NAME_PARENT}\"\\n# shellcheck disable=SC2034 # this is intentional\\nSUDO_STATE=\"false\"\\n# shellcheck disable=SC2116 disable=SC2034 # this is intentional\\nSCRIPT_SHELL=$(echo \"${SHELL}\")\\n\\n# hostname is assumed to be a FQDN set during installation.\\n# shellcheck disable=SC2006 disable=SC2086 disable=SC2034 # this is intentional\\nHOST_FQDN=$(cat /etc/hostname)\\nHOST_FQDN=$(hostname -f)\\n# shellcheck disable=SC2006 disable=SC2086 disable=SC2034 # this is intentional\\nHOST_NAME=$(echo ${HOST_FQDN} | awk -F \".\" '{print $1}')\\n# shellcheck disable=SC2006 disable=SC2086 disable=SC2034 # this is intentional\\nDOMAIN_NAME=$(echo ${HOST_FQDN} | awk -F \".\" '{print $2\".\"$3}')\\n# shellcheck disable=SC2006 disable=SC2086 disable=SC2034 # this is intentional\\nHOST_IPV4=$(ip address | grep -v \"127.0.0\" | grep \"inet \" | awk '{print $2}' | awk -F \"/\" '{print $1}' | head -n 1)\\n\\n# keep track of deployment status\\n# shellcheck disable=SC2034 # this is intentional\\nSTATUS_FILE_PREFIX=\"${LOG_DIR}/${LOG_NAME}\"\\n\\n# Linux Distribution\\n# shellcheck disable=SC2006 disable=SC2086 disable=SC2034 # this is intentional\\nDISTRIBUTION=$(cat /etc/*-release | uniq -u | grep \"^NAME\" | awk -F \"=\" '{ gsub(\"\\\"\", \"\",$2); print $2}')\\nDISTRIBUTION_PRETTY_NAME=$(cat /etc/*-release | uniq -u | grep \"^PRETTY_NAME\" | awk -F \"=\" '{ gsub(\"\\\"\", \"\",$2); print $2}')\\n\\n# Show license\\nlicense\\nctmLogo\\n# Extract the script parameters\\nindex=1\\n\\nfor arg in \"$@\"; do\\n    VAR_NAME=\"ZZM_ARG$index\"\\n\\n    # Remove leading and trailing spaces\\n    VAR_VALUE_TEMP=\"${arg:2}\"\\n    VAR_VALUE=$(echo \"${VAR_VALUE_TEMP}\" | sed 's/^[[:space:]]*//; s/[[:space:]]*$//')\\n    declare \"${VAR_NAME}=${VAR_VALUE}\"\\n    index=$((index + 1))\\ndone\\n\\n# Testing: Print the variables\\n# for ((i = 1; i <= $#; i++)); do\\n#     VAR_NAME=\"ZZM_ARG${i}\"\\n# done\\n\\n# Assume ZZM_ARG1 to be a file name\\n# Extract file name and extension\\nFILE_NAME=$(basename \"${ZZM_ARG1}\")\\nFILE_EXTENSION=\"${FILE_NAME##*.}\"\\nFILE_DIR=$(dirname \"${ZZM_ARG1}\")\\nFILE_PARENT=$(basename \"$FILE_DIR\")\\n\\nif [ -z \"${FILE_DIR}\" ]; then\\n    FILE_DIR=\"/\"\\n    FILE_PARENT=\"/\"\\n\\nfi\\n\\necho \" \"\\necho \" ${SCRIPT_PURPOSE}\"\\necho \" -----------------------------------------------\"\\necho -e \" Date           : ${DATE_TODAY}\"\\necho -e \" Distribution   : ${DISTRIBUTION_PRETTY_NAME}\"\\necho -e \" Domain Name    : ${DOMAIN_NAME}\"\\necho -e \" Host FDQN      : ${HOST_FQDN}\"\\necho -e \" Host Name      : ${HOST_NAME}\"\\necho -e \" Host IPv4      : ${HOST_IPV4}\"\\necho \" -----------------------------------------------\"\\n\\n# echo variables for user and group\\necho \" ---------------------\"\\necho -e \" Argument      : ZZM_ARG1 -> File Name\"\\necho -e \" ZZM_ARG1     : '${ZZM_ARG1}'\"\\necho \" ---------------------\"\\necho -e \" File          : ${ZZM_ARG1}\"\\necho -e \" File Name     : ${FILE_NAME}\"\\necho -e \" File Ext      : ${FILE_EXTENSION}\"\\necho -e \" File Parent   : ${FILE_PARENT}\"\\necho -e \" File Path     : ${FILE_DIR}\"\\necho \" -----------------------------------------------\"\\necho \" \"\\n",
+        "SubApplication" : "Multipath Cloud Demo for %%ZZM_USER_ID",
+        "FileName" : "zzm.compute.file.name.sh",
+        "Host" : "ZZM_AGT_01",
+        "CreatedBy" : "orchestrator@bmc.com",
+        "Description" : "Compute new file name and path",
+        "RunAs" : "mftuser",
+        "Application" : "ZZM %%ZZM_COMPANY",
+        "Variables" : [ {
+          "PARM1" : "%%ZZM_FILE_NAME_NEW"
+        } ],
+        "DocumentationUrl" : {
+          "Url" : "https://ctm-git.trybmc.com/control-m-use-case-exploration/ZZM/-/tree/master/src/scripts/helper"
+        },
+        "When" : {
+          "WeekDays" : [ "NONE" ],
+          "Months" : [ "NONE" ],
+          "MonthDays" : [ "NONE" ],
+          "DaysRelation" : "OR",
+          "RuleBasedCalendars" : {
+            "Included" : [ "USE PARENT" ]
+          }
+        },
+        "CaptureOutput_1" : {
+          "Type" : "Action:CaptureOutput",
+          "Capture" : "UpToEndOfLine",
+          "Search" : "File          :",
+          "VariableName" : "\\\\ZZM_FILE_PATH_NEW",
+          "ForwardBy" : {
+            "Columns" : "1",
+            "ColumnsOption" : "Characters"
+          }
+        },
+        "CaptureOutput_2" : {
+          "Type" : "Action:CaptureOutput",
+          "Capture" : "UpToEndOfLine",
+          "Search" : "File Name     :",
+          "VariableName" : "\\\\ZZM_FILE_NAME_NEW",
+          "ForwardBy" : {
+            "Columns" : "1",
+            "ColumnsOption" : "Characters"
+          }
+        },
+        "CaptureOutput_3" : {
+          "Type" : "Action:CaptureOutput",
+          "Capture" : "UpToEndOfLine",
+          "Search" : "File Parent   :",
+          "VariableName" : "\\\\ZZM_FILE_PARENT_NEW",
+          "ForwardBy" : {
+            "Columns" : "1",
+            "ColumnsOption" : "Characters"
+          }
+        },
+        "eventsToWaitFor" : {
+          "Type" : "WaitForEvents",
+          "Events" : [ {
+            "Event" : "ZZM_Move_File_SFTP-TO-ZZM_Report_Data_File_Name_%%SMART_ORDERID"
+          } ]
+        },
+        "eventsToDelete" : {
+          "Type" : "DeleteEvents",
+          "Events" : [ {
+            "Event" : "ZZM_Move_File_SFTP-TO-ZZM_Report_Data_File_Name_%%SMART_ORDERID"
+          } ]
+        }
+      },
+      "eventsToWaitFor" : {
+        "Type" : "WaitForEvents",
+        "Events" : [ {
+          "Event" : "ZZM_PreFlight_Check-TO-ZZM_UC_MULTIPATH_CLOUD_INGEST_%%SMART_ORDERID"
+        } ]
+      },
+      "eventsToAdd" : {
+        "Type" : "AddEvents",
+        "Events" : [ {
+          "Event" : "ZZM_UC_MULTIPATH_CLOUD_INGEST-TO-ZZM_UC_MULTIPATH_CLOUD_PROCESS_%%SMART_ORDERID"
+        } ]
+      },
+      "eventsToDelete" : {
+        "Type" : "DeleteEvents",
+        "Events" : [ {
+          "Event" : "ZZM_PreFlight_Check-TO-ZZM_UC_MULTIPATH_CLOUD_INGEST_%%SMART_ORDERID"
+        } ]
+      }
+    },
+    "ZZM_UC_MULTIPATH_CLOUD_PROCESS" : {
+      "Type" : "SubFolder",
+      "SubApplication" : "Multipath Cloud Demo for %%ZZM_USER_ID",
+      "AdjustEvents" : false,
+      "CreatedBy" : "orchestrator@bmc.com",
+      "Description" : "Simulate data processing phase",
+      "RunAs" : "mftuser",
+      "Application" : "ZZM %%ZZM_COMPANY",
+      "When" : {
+        "DaysRelation" : "OR",
+        "RuleBasedCalendars" : {
+          "Included" : [ "USE PARENT" ]
+        }
+      },
+      "ZZM Process Data" : {
+        "Type" : "Job:Dummy",
+        "SubApplication" : "Multipath Cloud Demo for %%ZZM_USER_ID",
+        "Host" : "ZZM_AGT_01",
+        "CreatedBy" : "orchestrator@bmc.com",
+        "RunAs" : "mftuser",
+        "Application" : "ZZM %%ZZM_COMPANY",
+        "When" : {
+          "WeekDays" : [ "NONE" ],
+          "MonthDays" : [ "ALL" ],
+          "DaysRelation" : "OR",
+          "RuleBasedCalendars" : {
+            "Relationship" : "AND",
+            "Included" : [ "USE PARENT" ]
+          }
+        }
+      },
+      "eventsToWaitFor" : {
+        "Type" : "WaitForEvents",
+        "Events" : [ {
+          "Event" : "ZZM_UC_MULTIPATH_CLOUD_INGEST-TO-ZZM_UC_MULTIPATH_CLOUD_PROCESS_%%SMART_ORDERID"
+        } ]
+      },
+      "eventsToAdd" : {
+        "Type" : "AddEvents",
+        "Events" : [ {
+          "Event" : "ZZM_UC_MULTIPATH_CLOUD_PROCESS-TO-ZZM_UC_MULTIPATH_CLOUD_DELIVER_AWS_%%SMART_ORDERID"
+        }, {
+          "Event" : "ZZM_UC_MULTIPATH_CLOUD_PROCESS-TO-ZZM_UC_MULTIPATH_CLOUD_DELIVER_AZURE_%%SMART_ORDERID"
+        }, {
+          "Event" : "ZZM_UC_MULTIPATH_CLOUD_PROCESS-TO-ZZM_UC_MULTIPATH_CLOUD_DELIVER_GOOGLE_%%SMART_ORDERID"
+        } ]
+      },
+      "eventsToDelete" : {
+        "Type" : "DeleteEvents",
+        "Events" : [ {
+          "Event" : "ZZM_UC_MULTIPATH_CLOUD_INGEST-TO-ZZM_UC_MULTIPATH_CLOUD_PROCESS_%%SMART_ORDERID"
+        } ]
+      }
+    },
+    "ZZM Base CleanUp" : {
+      "Type" : "Job:Command",
+      "SubApplication" : "Multipath Cloud Demo for %%ZZM_USER_ID",
+      "Host" : "ZZM_AGT_02",
+      "CreatedBy" : "emuser",
+      "Description" : "delete files from ftshome temp folder",
+      "RunAs" : "mftuser",
+      "Application" : "ZZM %%ZZM_COMPANY",
+      "Command" : "env && ls -l /temp/data.multipath.cloud.* && rm -rf /temp/%%ZZM_FILE_NAME_NEW",
+      "When" : {
+        "WeekDays" : [ "NONE" ],
+        "MonthDays" : [ "ALL" ],
+        "DaysRelation" : "OR"
+      },
+      "IfBase:Folder:CompletionStatus_0" : {
+        "Type" : "If:CompletionStatus",
+        "CompletionStatus" : "NOTOK",
+        "Action:SetToOK_0" : {
+          "Type" : "Action:SetToOK"
+        }
+      },
+      "eventsToWaitFor" : {
+        "Type" : "WaitForEvents",
+        "Events" : [ {
+          "Event" : "ZZM_UC_MULTIPATH_CLOUD_DELIVER_GOOGLE-TO-ZZM_Base_CleanUp_%%SMART_ORDERID"
+        }, {
+          "Event" : "ZZM_UC_MULTIPATH_CLOUD_DELIVER_AZURE-TO-ZZM_Base_CleanUp_%%SMART_ORDERID"
+        }, {
+          "Event" : "ZZM_UC_MULTIPATH_CLOUD_DELIVER_AWS-TO-ZZM_Base_CleanUp_%%SMART_ORDERID"
+        } ]
+      },
+      "eventsToAdd" : {
+        "Type" : "AddEvents",
+        "Events" : [ {
+          "Event" : "ZZM_Base_CleanUp-TO-ZZM_Base_SLA_%%SMART_ORDERID"
+        } ]
+      },
+      "eventsToDelete" : {
+        "Type" : "DeleteEvents",
+        "Events" : [ {
+          "Event" : "ZZM_UC_MULTIPATH_CLOUD_DELIVER_GOOGLE-TO-ZZM_Base_CleanUp_%%SMART_ORDERID"
+        }, {
+          "Event" : "ZZM_UC_MULTIPATH_CLOUD_DELIVER_AZURE-TO-ZZM_Base_CleanUp_%%SMART_ORDERID"
+        }, {
+          "Event" : "ZZM_UC_MULTIPATH_CLOUD_DELIVER_AWS-TO-ZZM_Base_CleanUp_%%SMART_ORDERID"
+        } ]
+      }
+    },
+    "ZZM Base SLA" : {
+      "Type" : "Job:SLAManagement",
+      "ServiceName" : "ZZM MFT Multipath Cloud Demo",
+      "ServicePriority" : "5",
+      "SubApplication" : "Multipath Cloud Demo for %%ZZM_USER_ID",
+      "Host" : "ZZM_AGT_01",
+      "JobRunsDeviationsTolerance" : "3",
+      "CreatedBy" : "orchestrator@bmc.com",
+      "RunAs" : "mftuser",
+      "Application" : "ZZM %%ZZM_COMPANY",
+      "CompleteIn" : {
+        "Time" : "0:15"
+      },
+      "When" : {
+        "WeekDays" : [ "NONE" ],
+        "Months" : [ "NONE" ],
+        "MonthDays" : [ "NONE" ],
+        "DaysRelation" : "OR",
+        "RuleBasedCalendars" : {
+          "Included" : [ "USE PARENT" ]
+        }
+      },
+      "eventsToWaitFor" : {
+        "Type" : "WaitForEvents",
+        "Events" : [ {
+          "Event" : "ZZM_Base_CleanUp-TO-ZZM_Base_SLA_%%SMART_ORDERID"
+        } ]
+      },
+      "eventsToDelete" : {
+        "Type" : "DeleteEvents",
+        "Events" : [ {
+          "Event" : "ZZM_Base_CleanUp-TO-ZZM_Base_SLA_%%SMART_ORDERID"
+        } ]
+      }
+    },
+    "ZZM PreFlight Check" : {
+      "Type" : "Job:EmbeddedScript",
+      "Script" : "#!/bin/bash\\nset +x\\n# shellcheck enable=require-variable-braces\\n# file name: zzm.pre.flight.sh\\n################################################################################\\n# License                                                                      #\\n################################################################################\\n\\nfunction license() {\\n    # On MAC update bash: https://scriptingosx.com/2019/02/install-bash-5-on-macos/\\n    printf '%s\\n' \"\"\\n    printf '%s\\n' \" GPL-3.0-only or GPL-3.0-or-later\"\\n    printf '%s\\n' \" Copyright (c) 2021 BMC Software, Inc.\"\\n    printf '%s\\n' \" Author: Volker Scheithauer\"\\n    printf '%s\\n' \" E-Mail: orchestrator@bmc.com\"\\n    printf '%s\\n' \"\"\\n    printf '%s\\n' \" This program is free software: you can redistribute it and/or modify\"\\n    printf '%s\\n' \" it under the terms of the GNU General Public License as published by\"\\n    printf '%s\\n' \" the Free Software Foundation, either version 3 of the License, or\"\\n    printf '%s\\n' \" (at your option) any later version.\"\\n    printf '%s\\n' \"\"\\n    printf '%s\\n' \" This program is distributed in the hope that it will be useful,\"\\n    printf '%s\\n' \" but WITHOUT ANY WARRANTY; without even the implied warranty of\"\\n    printf '%s\\n' \" MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the\"\\n    printf '%s\\n' \" GNU General Public License for more details.\"\\n    printf '%s\\n' \"\"\\n    printf '%s\\n' \" You should have received a copy of the GNU General Public License\"\\n    printf '%s\\n' \" along with this program.  If not, see <https://www.gnu.org/licenses/>.\"\\n}\\n\\nfunction ctmLogo() {\\n    printf '%s\\n' \"\"\\n    printf '%s\\n' \"  @@@@@@@   @@@@@@   @@@  @@@  @@@@@@@  @@@@@@@    @@@@@@   @@@                  @@@@@@@@@@   \"\\n    printf '%s\\n' \" @@@@@@@@  @@@@@@@@  @@@@ @@@  @@@@@@@  @@@@@@@@  @@@@@@@@  @@@                  @@@@@@@@@@@  \"\\n    printf '%s\\n' \" !@@       @@!  @@@  @@!@!@@@    @@!    @@!  @@@  @@!  @@@  @@!                  @@! @@! @@!  \"\\n    printf '%s\\n' \" !@!       !@!  @!@  !@!!@!@!    !@!    !@!  @!@  !@!  @!@  !@!                  !@! !@! !@!  \"\\n    printf '%s\\n' \" !@!       @!@  !@!  @!@ !!@!    @!!    @!@!!@!   @!@  !@!  @!!       @!@!@!@!@  @!! !!@ @!@  \"\\n    printf '%s\\n' \" !!!       !@!  !!!  !@!  !!!    !!!    !!@!@!    !@!  !!!  !!!       !!!@!@!!!  !@!   ! !@!  \"\\n    printf '%s\\n' \" :!!       !!:  !!!  !!:  !!!    !!:    !!: :!!   !!:  !!!  !!:                  !!:     !!:  \"\\n    printf '%s\\n' \" :!:       :!:  !:!  :!:  !:!    :!:    :!:  !:!  :!:  !:!   :!:                 :!:     :!:  \"\\n    printf '%s\\n' \"  ::: :::  ::::: ::   ::   ::     ::    ::   :::  ::::: ::   :: ::::             :::     ::   \"\\n    printf '%s\\n' \"  :: :: :   : :  :   ::    :      :      :   : :   : :  :   : :: : :              :      :    \"\\n    printf '%s\\n' \"\"\\n}\\n\\n# Get current script folder\\n# shellcheck disable=SC2046 # this is intentional\\nDIR_NAME=$(cd $(dirname \"${BASH_SOURCE[0]}\") && pwd)\\nDIR_NAME_PARENT=$(dirname \"${DIR_NAME}\")\\n\\n# shellcheck disable=SC2116 # this is intentionals\\nUSER_NAME=$(whoami)\\nUSER_HOME=$(getent passwd \"${USER_NAME}\" | cut -d: -f6)\\nUSER_AUTH_FILE=\"${USER_HOME}/.ssh/authorized_keys\"\\nUSER_RSA_FILE=\"${USER_HOME}/.ssh/id_rsa\"\\nUSER_GROUP=$(id -gn \"${USER_NAME}\")\\n\\n# SSH settings\\nif [[ -f \"${USER_HOME}/.ssh/id_rsa\" && -f \"${USER_HOME}/.ssh/id_rsa.pub\" ]]; then\\n    USER_RSA_STATUS=\"True\"\\n    USER_RSA_FINGER_PRINT=$(ssh-keygen -l -f \"${USER_HOME}/.ssh/id_rsa\")\\nelse\\n    USER_RSA_STATUS=\"False\"\\nfi\\n\\nif [[ -f \"${USER_HOME}/.ssh/id_rsa\" && -f \"${USER_HOME}/.ssh/id_rsa.pub\" ]]; then\\n    USER_RSA_AUTH_COUNT=$(wc -l <\"${USER_AUTH_FILE}\")\\nelse\\n    USER_RSA_AUTH_COUNT=\"False\"\\nfi\\n\\n# compute working dir\\n# check if write permission\\nif [ -w \"${DIR_NAME_PARENT}\" ]; then\\n    WORKING_DIR=\"${DIR_NAME_PARENT}/proclog\"\\nelse\\n    WORKING_DIR=\"/tmp/data\"\\nfi\\n\\n# create working directory\\nif [ ! -d \"${WORKING_DIR}\" ]; then\\n    mkdir -p \"${WORKING_DIR}\"\\n    ## shellcheck disable=SC2153 # this is intentional\\nfi\\n\\n# compute config dir\\nCONFIG_DIR=\"${DIR_NAME_PARENT}/data\"\\n\\n# shellcheck disable=SC2034 # this is intentional\\nSCRIPT_DATA_FILE=\"${CONFIG_DIR}/data.json\"\\n\\n# Script defaults\\n# shellcheck disable=SC2034 # this is intentional\\nretcode=0\\n# shellcheck disable=SC2034 # this is intentional\\nSETUP_DIR=\"${DIR_NAME_PARENT}\"\\n# shellcheck disable=SC2034 # this is intentional\\nSUDO_STATE=\"false\"\\n# shellcheck disable=SC2116 disable=SC2034 # this is intentional\\nSCRIPT_SHELL=$(echo \"${SHELL}\")\\n\\n# hostname is assumed to be a FQDN set during installation.\\n# shellcheck disable=SC2006 disable=SC2086 disable=SC2034 # this is intentional\\nHOST_FQDN=$(cat /etc/hostname)\\nHOST_FQDN=$(hostname -f)\\n# shellcheck disable=SC2006 disable=SC2086 disable=SC2034 # this is intentional\\nHOST_NAME=$(echo ${HOST_FQDN} | awk -F \".\" '{print $1}')\\n# shellcheck disable=SC2006 disable=SC2086 disable=SC2034 # this is intentional\\nDOMAIN_NAME=$(echo ${HOST_FQDN} | awk -F \".\" '{print $2\".\"$3}')\\n# shellcheck disable=SC2006 disable=SC2086 disable=SC2034 # this is intentional\\nHOST_IPV4=$(ip address | grep -v \"127.0.0\" | grep \"inet \" | awk '{print $2}' | awk -F \"/\" '{print $1}' | head -n 1)\\n\\n# logging configuration\\n# requires script variables\\nDATE_TODAY=\"$(date '+%Y-%m-%d %H:%M:%S')\"\\nLOG_DATE=$(date +%Y%m%d)\\nLOG_DIR=\"${WORKING_DIR}/${HOST_NAME}\"\\n\\nif [ ! -d \"${LOG_DIR}\" ]; then\\n    mkdir -p \"${LOG_DIR}\"\\n    ## shellcheck disable=SC2153 # this is intentional\\n    # sudo chown \"${USER_NAME}\":\"${USER_GROUP}\" \"${LOG_DIR}\" -R\\nfi\\n\\n# shellcheck disable=SC2006 disable=SC2086# this is intentional\\nLOG_NAME=$(basename $0)\\nLOG_FILE=\"${LOG_DIR}/${LOG_NAME}.${LOG_DATE}.txt\"\\nif [[ ! -f \"${LOG_FILE}\" ]]; then\\n    echo ' .' | tee -a \"${LOG_FILE}\"\\nfi\\n\\n# keep track of deployment status\\n# shellcheck disable=SC2034 # this is intentional\\nSTATUS_FILE_PREFIX=\"${LOG_DIR}/${LOG_NAME}\"\\n\\n# Linux Distribution\\n# shellcheck disable=SC2006 disable=SC2086 disable=SC2034 # this is intentional\\nDISTRIBUTION=$(cat /etc/*-release | uniq -u | grep \"^NAME\" | awk -F \"=\" '{ gsub(\"\\\"\", \"\",$2); print $2}')\\nDISTRIBUTION_PRETTY_NAME=$(cat /etc/*-release | uniq -u | grep \"^PRETTY_NAME\" | awk -F \"=\" '{ gsub(\"\\\"\", \"\",$2); print $2}')\\n\\n# JAVA version\\nJAVA_HOME=$(sh -c \"java -XshowSettings:properties -version 2>&1 > /dev/null | grep 'java.home'\" | awk -F \"= \" '{print $2}')\\nJAVA_VERSION=$(sh -c \"java -XshowSettings:properties -version 2>&1 > /dev/null | grep 'java.runtime.version'\" | awk -F \"= \" '{print $2}')\\nJAVA_RUNTIME=$(sh -c \"java -XshowSettings:properties -version 2>&1 > /dev/null | grep 'java.runtime.name'\" | awk -F \"= \" '{print $2}')\\n\\n# Show license\\nlicense\\nctmLogo\\n\\n# Extract the script parameters\\n# PARMn contains var_name:var_val\\n# CTM OS Job variables\\n# PARM1 -> ZZM_COMPANY:%%ZZM_COMPANY\\n# PARM2 -> ZZM_CTM_ENVIRONMENT:%%ZZM_CTM_ENVIRONMENT\\n\\n# Cloud Storage Parameters\\n# PARM3 -> ZZM_AWS_S3_BUCKET:%%ZZM_AWS_S3_BUCKET\\n# PARM4 -> ZZM_AZURE_CONTAINER:%%ZZM_AZURE_CONTAINER\\n# PARM5 -> ZZM_GCS_BUCKET:%%ZZM_GCS_BUCKET\\n# PARM6 -> ZZM_OCI_BUCKET:%%ZZM_OCI_BUCKET\\n\\nindex=1\\n\\nfor arg in \"$@\"; do\\n    VAR_VALUE=\"${arg}\"\\n    PARAMETER_NAME=\"${VAR_VALUE%%:*}\"\\n    PARAMETER_VALUE=$(echo \"${VAR_VALUE#*: }\" | cut -d ':' -f 2-)\\n\\n    if [[ \"${PARAMETER_NAME}\" == \"ZZM_COMPANY\"* ]]; then\\n        # Extract the name part\\n        ZZM_COMPANY=\"${PARAMETER_VALUE}\"\\n    elif [[ \"${PARAMETER_NAME}\" == \"ZZM_CTM_ENVIRONMENT\"* ]]; then\\n        ZZM_CTM_ENVIRONMENT=\"${PARAMETER_VALUE}\"\\n    elif [[ \"${PARAMETER_NAME}\" == \"ZZM_AWS_S3_BUCKET\"* ]]; then\\n        ZZM_AWS_S3_BUCKET=\"${PARAMETER_VALUE}\"\\n    elif [[ \"${PARAMETER_NAME}\" == \"ZZM_AZURE_CONTAINER\"* ]]; then\\n        ZZM_AZURE_CONTAINER=\"${PARAMETER_VALUE}\"\\n    elif [[ \"${PARAMETER_NAME}\" == \"ZZM_GCS_BUCKET\"* ]]; then\\n        ZZM_GCS_BUCKET=\"${PARAMETER_VALUE}\"\\n    elif [[ \"${PARAMETER_NAME}\" == \"ZZM_OCI_BUCKET\"* ]]; then\\n        ZZM_OCI_BUCKET=\"${PARAMETER_VALUE}\"\\n    fi\\n    index=$((index + 1))\\ndone\\n\\nif [ -z \"${SCRIPT_PURPOSE}\" ]; then\\n    SCRIPT_PURPOSE=\"Base OS Information\"\\nfi\\n\\nCTM_COMMAND=\"ctm env show\"\\n\\necho \" \"\\necho \" ${SCRIPT_PURPOSE}\"\\necho \" -----------------------------------------------\"\\necho -e \" Date           : ${DATE_TODAY}\"\\necho -e \" Distribution   : ${DISTRIBUTION_PRETTY_NAME}\"\\necho -e \" Current User   : ${USER}\"\\necho -e \" Sudo Mode      : ${SUDO_STATE}\"\\necho -e \" Domain Name    : ${DOMAIN_NAME}\"\\necho -e \" Host FDQN      : ${HOST_FQDN}\"\\necho -e \" Host Name      : ${HOST_NAME}\"\\necho -e \" Host IPv4      : ${HOST_IPV4}\"\\necho -e \" Script Folder  : ${DIR_NAME}\"\\necho -e \" Working Folder : ${WORKING_DIR}\"\\necho -e \" Config Folder  : ${CONFIG_DIR}\"\\necho -e \" Log Folder     : ${LOG_DIR}\"\\necho \" ---------------------\"\\necho -e \" Data File      : ${SCRIPT_DATA_FILE}\"\\necho -e \" Data Folder    : ${CONFIG_DIR}\"\\necho -e \" JAVA Version   : ${JAVA_VERSION}\"\\necho -e \" JAVA RunTime   : ${JAVA_RUNTIME}\"\\necho -e \" JAVA Home      : ${JAVA_HOME}\"\\necho \" \"\\necho \" -----------------------------------------------\"\\n\\n# echo variables for user and group\\necho -e \" Group Name    : ${USER_GROUP}\"\\necho -e \" User Name     : ${USER_NAME}\"\\necho -e \" User Home     : ${USER_HOME}\"\\necho -e \" SSH Key       : ${USER_RSA_FILE}\"\\necho -e \" SSH Auth      : ${USER_AUTH_FILE}\"\\necho -e \" SSH Status    : ${USER_RSA_STATUS}\"\\necho -e \" SSH FPrint    : ${USER_RSA_FINGER_PRINT}\"\\necho -e \" SSH Auth #    : ${USER_RSA_AUTH_COUNT}\"\\necho \" ---------------------\"\\necho \" + Use Case Environment\"\\necho -e \" Company       : ${ZZM_COMPANY}\"\\necho -e \" CTM Env       : ${ZZM_CTM_ENVIRONMENT}\"\\necho \" ---------------------\"\\necho \" + Use Case Variables\"\\necho -e \" AWS S3 Bucket : ${ZZM_AWS_S3_BUCKET}\"\\necho -e \" AZR Container : ${ZZM_AZURE_CONTAINER}\"\\necho -e \" GCS Bucket    : ${ZZM_GCS_BUCKET}\"\\necho -e \" OCI Bucket    : ${ZZM_OCI_BUCKET}\"\\necho \" -----------------------------------------------\"\\necho \" \"\\necho \" + CTM Command\"\\necho -e \" CTM AAPI      : ${CTM_COMMAND}\"\\necho \" -----------------------------------------------\"\\necho \" \"\\n\\nCTM_COMMAND_STATUS=$(${CTM_COMMAND})\\n\\necho \" ---------------------\"\\necho \" + CTM Environments\"\\necho -e \" CTM Environment: ${CTM_COMMAND_STATUS}\"\\necho \" -----------------------------------------------\"\\necho \" \"\\n",
+      "SubApplication" : "Multipath Cloud Demo for %%ZZM_USER_ID",
+      "FileName" : "zzm.pre.flight.sh",
+      "Host" : "ZZM_AGT_01",
+      "CreatedBy" : "orchestrator@bmc.com",
+      "Description" : "PreFlight Check for Use Case",
+      "RunAs" : "mftuser",
+      "Application" : "ZZM %%ZZM_COMPANY",
+      "Variables" : [ {
+        "PARM1" : "ZZM_COMPANY:%%ZZM_COMPANY"
+      }, {
+        "PARM2" : "ZZM_USER_ID:%%ZZM_USER_ID"
+      }, {
+        "PARM3" : "ZZM_USER_EMAIL:%%ZZM_USER_EMAIL"
+      }, {
+        "PARM4" : "ZZM_CTM_ENVIRONMENT:%%ZZM_CTM_ENVIRONMENT"
+      }, {
+        "PARM5" : "ORDERID:%%ORDERID"
+      } ],
+      "DocumentationUrl" : {
+        "Url" : "https://ctm-git.trybmc.com/control-m-use-case-exploration/ZZM/-/tree/master/src/scripts/helper"
+      },
+      "When" : {
+        "WeekDays" : [ "NONE" ],
+        "MonthDays" : [ "ALL" ],
+        "DaysRelation" : "OR"
+      },
+      "eventsToAdd" : {
+        "Type" : "AddEvents",
+        "Events" : [ {
+          "Event" : "ZZM_PreFlight_Check-TO-ZZM_UC_MULTIPATH_CLOUD_INGEST_%%SMART_ORDERID"
+        } ]
+      }
+    }
+  }
+}

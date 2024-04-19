@@ -1,3 +1,17 @@
+---
+tags:
+  - mft
+  - best practice
+hide:
+  - tags
+title: Best Practice for MFT
+summary: A brief description of my document.
+authors:
+    - Volker Scheithauer
+    - MFT VSE
+date: 2023-07-12
+---
+
 ## Best Practice: **MFT**
 
 ### Requirements for Secure Managed File Transfer
